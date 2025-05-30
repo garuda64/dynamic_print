@@ -169,12 +169,21 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script type="text/javascript">
         function exportHTML() {
-            const container = document.querySelector('.container');
-            const clone = container.cloneNode(true);
-            clone.querySelector('button').remove(); // Remove print button
-            
-            const html = clone.innerHTML;
-            const blob = new Blob([html], {type: 'text/html'});
+            const originalDoc = document.documentElement.cloneNode(true);
+
+            // Remove the element panel
+            const elementPanel = originalDoc.querySelector('.element-panel');
+            if (elementPanel) {
+                elementPanel.remove();
+            }
+
+            // Remove all buttons
+            originalDoc.querySelectorAll('button').forEach(button => button.remove());
+
+            // Get the full HTML string from the modified clone
+            const fullHtml = originalDoc.outerHTML;
+
+            const blob = new Blob([fullHtml], {type: 'text/html'});
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
