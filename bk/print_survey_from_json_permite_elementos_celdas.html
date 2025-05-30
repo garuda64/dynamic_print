@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NPS Survey Print (No SurveyJS)</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: #333;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .element-panel {
+            width: 250px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .element-panel h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #555;
+        }
+        .draggable-item {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: grab;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .draggable-item:hover {
+            background-color: #f0f0f0;
+        }
+        .draggable-item.sortable-chosen {
+            background-color: #e0e0e0;
+        }
+        .draggable-item.sortable-ghost {
+            opacity: 0.5;
+        }
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-height: calc(100% - 40px); /* Adjust for padding */
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 100%;
+            height: auto;
+        }
+        .question-block {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        .rating-scale span {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .checkbox-choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .checkbox-choices div {
+            background-color: #f9f9f9;
+            padding: 8px;
+            border-radius: 3px;
+        }
+        .comment-box {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #ccc;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+        .completed-message {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e6ffe6;
+            border: 1px solid #b3ffb3;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .section-container {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .section-content {
+            min-height: 50px;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 5px;
+            display: flex; /* Enable flexbox for column layout */
+            flex-wrap: wrap; /* Allow items to wrap to the next line */
+            align-items: flex-start; /* Align items to the top */
+        }
+        .section-content .draggable-item {
+            flex: 1; /* Allow items to grow and shrink */
+            min-width: 100px; /* Minimum width for columns */
+            margin: 5px; /* Spacing between columns */
+        }
+        @media print {
+            body {
+                margin: 0;
+            }
+            .container {
+                border: none;
+                box-shadow: none;
+            }
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="element-panel">
+        <h2>Elementos</h2>
+        <div class="draggable-item" data-type="text">Texto</div>
+        <div class="draggable-item" data-type="image">Imagen</div>
+        <div class="draggable-item" data-type="section">Sección</div>
+        <div class="draggable-item" data-type="line">Línea</div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div id="survey-content"></div>
+            <button onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script type="text/javascript">
+        var surveyJson = {
+            "title": "NPS Survey Question",
+            "logo": "https://surveyjs.io/Content/Images/examples/logo.png",
+            "logoHeight": "60px",
+            "headerView": "advanced",
+            "pages": [
+                {
+                    "name": "page1",
+                    "elements": [
+                        {
+                            "type": "rating",
+                            "name": "nps_score",
+                            "title": "On a scale of zero to ten, how likely are you to recommend our product to a friend or colleague?",
+                            "isRequired": true,
+                            "rateMin": 0,
+                            "rateMax": 10,
+                            "minRateDescription": "(Most unlikely)",
+                            "maxRateDescription": "(Most likely)"
+                        },
+                        {
+                            "type": "checkbox",
+                            "name": "promoter_features",
+                            "visibleIf": "{nps_score} >= 9",
+                            "title": "Which of the following features do you value the most?",
+                            "description": "Please select no more than three features.",
+                            "isRequired": true,
+                            "validators": [
+                                {
+                                    "type": "answercount",
+                                    "text": "Please select no more than three features.",
+                                    "maxCount": 3
+                                }
+                            ],
+                            "showOtherItem": true,
+                            "choices": [
+                                "Performance",
+                                "Stability",
+                                "User interface",
+                                "Complete functionality",
+                                "Learning materials (documentation, demos, code examples)",
+                                "Quality support"
+                            ],
+                            "otherText": "Other features:",
+                            "colCount": 2
+                        },
+                        {
+                            "type": "comment",
+                            "name": "passive_experience",
+                            "visibleIf": "{nps_score} >= 7  and {nps_score} <= 8",
+                            "title": "What can we do to make your experience more satisfying?"
+                        },
+                        {
+                            "type": "comment",
+                            "name": "disappointing_experience",
+                            "visibleIf": "{nps_score} <= 6",
+                            "title": "Please let us know why you had such a disappointing experience with our product"
+                        }
+                    ]
+                }
+            ],
+            "completedHtml": "<h3>Thank you for your feedback</h3>",
+            "completedHtmlOnCondition": [
+                {
+                    "expression": "{nps_score} >= 9",
+                    "html": "<h3>Thank you for your feedback</h3> <h4>We are glad that you love our product. Your ideas and suggestions will help us make it even better.</h4>"
+                },
+                {
+                    "expression": "{nps_score} >= 6  and {nps_score} <= 8",
+                    "html": "<h3>Thank you for your feedback</h3> <h4>We are glad that you shared your ideas with us. They will help us make our product better.</h4>"
+                }
+            ]
+        };
+
+        var surveyResponse = { "nps_score": 10, "promoter_features": [ "Performance" ] };
+
+        var surveyContentDiv = document.getElementById('survey-content');
+
+        // Render Header
+        var headerHtml = '<div class="header">';
+        if (surveyJson.logo) {
+            headerHtml += '<img src="' + surveyJson.logo + '" alt="Logo" style="height: ' + (surveyJson.logoHeight || 'auto') + ';">';
+        }
+        if (surveyJson.title) {
+            headerHtml += '<h1>' + surveyJson.title + '</h1>';
+        }
+        headerHtml += '</div>';
+        surveyContentDiv.innerHTML += headerHtml;
+
+        // Render Pages and Elements
+        surveyJson.pages.forEach(function(page) {
+            page.elements.forEach(function(element) {
+                var shouldDisplay = false;
+
+                if (element.type === 'rating') {
+                    shouldDisplay = surveyResponse[element.name] !== undefined;
+                } else if (element.type === 'checkbox') {
+                    shouldDisplay = surveyResponse[element.name] && Array.isArray(surveyResponse[element.name]) && surveyResponse[element.name].length > 0;
+                } else if (element.type === 'comment') {
+                    shouldDisplay = surveyResponse[element.name] !== undefined && surveyResponse[element.name] !== '';
+                }
+
+                if (shouldDisplay) {
+                    var elementHtml = '<div class="question-block">';
+                    elementHtml += '<div class="question-title">' + element.title + '</div>';
+
+                    if (element.type === 'rating') {
+                        elementHtml += '<div class="rating-scale">';
+                        for (var i = element.rateMin; i <= element.rateMax; i++) {
+                            elementHtml += '<span ' + (surveyResponse[element.name] !== undefined && surveyResponse[element.name] === i ? 'style="font-weight: bold; color: blue;"' : '') + '>' + i + '</span>';
+                        }
+                        elementHtml += '</div>';
+                        if (element.minRateDescription || element.maxRateDescription) {
+                            elementHtml += '<div class="rating-scale">';
+                            if (element.minRateDescription) elementHtml += '<span>' + element.minRateDescription + '</span>';
+                            if (element.maxRateDescription) elementHtml += '<span>' + element.maxRateDescription + '</span>';
+                            elementHtml += '</div>';
+                        }
+                    } else if (element.type === 'checkbox') {
+                        elementHtml += '<div class="checkbox-choices">';
+                        element.choices.forEach(function(choice) {
+                            var isChecked = surveyResponse[element.name] && Array.isArray(surveyResponse[element.name]) && surveyResponse[element.name].includes(choice);
+                            elementHtml += '<div>' + choice + (isChecked ? ' (X)' : '') + '</div>';
+                        });
+                        if (element.showOtherItem && surveyResponse[element.name] && Array.isArray(surveyResponse[element.name]) && surveyResponse[element.name].includes(element.otherText)) {
+                            var otherValue = surveyResponse[element.name + '_other'] || '';
+                            elementHtml += '<div>' + element.otherText + ' ' + otherValue + '</div>';
+                        }
+                        elementHtml += '</div>';
+                    } else if (element.type === 'comment') {
+                        var commentText = surveyResponse[element.name] !== undefined ? surveyResponse[element.name] : '';
+                        elementHtml += '<div class="comment-box">' + commentText + '</div>';
+                    }
+                    elementHtml += '</div>';
+                    surveyContentDiv.innerHTML += elementHtml;
+                }
+            });
+        });
+
+        // Render Completed HTML (simplified for print, as conditions are not evaluated)
+        if (surveyJson.completedHtml) {
+            surveyContentDiv.innerHTML += '<div class="completed-message">' + surveyJson.completedHtml + '</div>';
+        }
+
+        // Initialize SortableJS for the element panel
+        var elementPanel = document.querySelector('.element-panel');
+        new Sortable(elementPanel, {
+            group: { name: 'shared', pull: 'clone', put: false }, // Can drag from here, but not drop into
+            animation: 150,
+            sort: false // Do not allow sorting within the panel
+        });
+
+            // Initialize SortableJS for the survey content area
+            const surveySortable = new Sortable(surveyContentDiv, {
+                group: 'shared', // Can drop into here
+                animation: 150,
+                onAdd: function (evt) {
+                    const itemType = evt.item.getAttribute('data-type');
+                    let newElement;
+                    if (itemType === 'text') {
+                        newElement = document.createElement('div');
+                        newElement.className = 'draggable-item';
+                        newElement.innerHTML = '<p contenteditable="true">Nuevo Texto</p>';
+                    } else if (itemType === 'image') {
+                        newElement = document.createElement('div');
+                        newElement.className = 'draggable-item';
+                        newElement.innerHTML = '<img src="https://via.placeholder.com/150" alt="Imagen de marcador de posición" style="max-width:100%; height:auto;">';
+                    } else if (itemType === 'section') {
+                        newElement = document.createElement('div');
+                        newElement.className = 'draggable-item draggable-list section-container';
+                        newElement.innerHTML = '<h3>Nueva Sección</h3><div class="section-content"></div>';
+                        // Initialize SortableJS for the new section's content area
+                        new Sortable(newElement.querySelector('.section-content'), {
+                            group: 'shared', // Allow dragging out of the section
+                            animation: 150,
+                            draggable: '.draggable-item',
+                            multiDrag: true, // Enable multi-drag
+                            selectedClass: 'sortable-selected', // Class name for selected items
+                            fallbackTolerance: 3, // So that the event won't be fired a lot
+                            onEnd: function (evt) {
+                                // Optional: Logic after drag-and-drop within the section
+                                console.log('Element moved within section:', evt.item);
+                            }
+                        });
+                    } else if (itemType === 'line') {
+                        newElement = document.createElement('div');
+                        newElement.className = 'draggable-item';
+                        newElement.innerHTML = '<hr>';
+                    }
+                    if (newElement) {
+                        evt.item.replaceWith(newElement);
+                    }
+                }
+            });
+
+            // Initialize SortableJS for existing section content areas
+            document.querySelectorAll('.section-content').forEach(function(sectionContent) {
+                new Sortable(sectionContent, {
+                    group: 'shared', // Allow dragging out of the section
+                    animation: 150,
+                    draggable: '.draggable-item',
+                    multiDrag: true, // Enable multi-drag
+                    selectedClass: 'sortable-selected', // Class name for selected items
+                    fallbackTolerance: 3, // So that the event won't be fired a lot
+                    onEnd: function (evt) {
+                        // Optional: Logic after drag-and-drop within the section
+                        console.log('Element moved within existing section:', evt.item);
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
