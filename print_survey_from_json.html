@@ -162,11 +162,30 @@
         <div class="container">
             <div id="survey-content"></div>
             <button onclick="window.print()">Imprimir</button>
+            <button onclick="exportHTML()">Exportar</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script type="text/javascript">
+        function exportHTML() {
+            const container = document.querySelector('.container');
+            const clone = container.cloneNode(true);
+            clone.querySelector('button').remove(); // Remove print button
+            
+            const html = clone.innerHTML;
+            const blob = new Blob([html], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'survey_export.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
         var surveyJson = {
             "title": "NPS Survey Question",
             "logo": "https://surveyjs.io/Content/Images/examples/logo.png",
