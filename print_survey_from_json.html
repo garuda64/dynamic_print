@@ -336,12 +336,12 @@
                     } else if (itemType === 'section') {
                         newElement = document.createElement('div');
                         newElement.className = 'draggable-item draggable-list section-container';
-                        newElement.innerHTML = '<h3>Nueva Sección</h3><div class="section-content"></div>';
+                        newElement.innerHTML = '<h3 contenteditable="true">Nueva Sección</h3><div class="section-content"></div>';
                         // Initialize SortableJS for the new section's content area
                         new Sortable(newElement.querySelector('.section-content'), {
                             group: 'shared', // Allow dragging out of the section
                             animation: 150,
-                            draggable: '.draggable-item',
+                            draggable: '.draggable-item', // Make the individual items draggable
                             multiDrag: true, // Enable multi-drag
                             selectedClass: 'sortable-selected', // Class name for selected items
                             fallbackTolerance: 3, // So that the event won't be fired a lot
@@ -372,7 +372,7 @@
                 new Sortable(sectionContent, {
                     group: 'shared', // Allow dragging out of the section
                     animation: 150,
-                    draggable: '.draggable-item',
+                    draggable: '.draggable-item', // Make the individual items draggable
                     multiDrag: true, // Enable multi-drag
                     selectedClass: 'sortable-selected', // Class name for selected items
                     fallbackTolerance: 3, // So that the event won't be fired a lot
