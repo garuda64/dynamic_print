@@ -196,79 +196,102 @@
         }
         
         var surveyJson = {
-            "title": "NPS Survey Question",
-            "logo": "https://surveyjs.io/Content/Images/examples/logo.png",
-            "logoHeight": "60px",
-            "headerView": "advanced",
-            "pages": [
+        "title": "Hojas de notificación al Ministerio Público",
+        "pages": [
+            {
+            "name": "page1",
+            "elements": [
                 {
-                    "name": "page1",
-                    "elements": [
-                        {
-                            "type": "rating",
-                            "name": "nps_score",
-                            "title": "On a scale of zero to ten, how likely are you to recommend our product to a friend or colleague?",
-                            "isRequired": true,
-                            "rateMin": 0,
-                            "rateMax": 10,
-                            "minRateDescription": "(Most unlikely)",
-                            "maxRateDescription": "(Most likely)"
-                        },
-                        {
-                            "type": "checkbox",
-                            "name": "promoter_features",
-                            "visibleIf": "{nps_score} >= 9",
-                            "title": "Which of the following features do you value the most?",
-                            "description": "Please select no more than three features.",
-                            "isRequired": true,
-                            "validators": [
-                                {
-                                    "type": "answercount",
-                                    "text": "Please select no more than three features.",
-                                    "maxCount": 3
-                                }
-                            ],
-                            "showOtherItem": true,
-                            "choices": [
-                                "Performance",
-                                "Stability",
-                                "User interface",
-                                "Complete functionality",
-                                "Learning materials (documentation, demos, code examples)",
-                                "Quality support"
-                            ],
-                            "otherText": "Other features:",
-                            "colCount": 2
-                        },
-                        {
-                            "type": "comment",
-                            "name": "passive_experience",
-                            "visibleIf": "{nps_score} >= 7  and {nps_score} <= 8",
-                            "title": "What can we do to make your experience more satisfying?"
-                        },
-                        {
-                            "type": "comment",
-                            "name": "disappointing_experience",
-                            "visibleIf": "{nps_score} <= 6",
-                            "title": "Please let us know why you had such a disappointing experience with our product"
-                        }
-                    ]
-                }
-            ],
-            "completedHtml": "<h3>Thank you for your feedback</h3>",
-            "completedHtmlOnCondition": [
-                {
-                    "expression": "{nps_score} >= 9",
-                    "html": "<h3>Thank you for your feedback</h3> <h4>We are glad that you love our product. Your ideas and suggestions will help us make it even better.</h4>"
-                },
-                {
-                    "expression": "{nps_score} >= 6  and {nps_score} <= 8",
-                    "html": "<h3>Thank you for your feedback</h3> <h4>We are glad that you shared your ideas with us. They will help us make our product better.</h4>"
+                "type": "panel",
+                "name": "panel1",
+                "title": "Datos",
+                "elements": [
+                    {
+                    "type": "text",
+                    "name": "Nombre del Centro Notificador",
+                    "placeholder": "Nombre del Centro Notificador"
+                    },
+                    {
+                    "type": "text",
+                    "name": "Fecha",
+                    "inputType": "date"
+                    },
+                    {
+                    "type": "text",
+                    "name": "name",
+                    "title": "Nombre del Centro Notificador",
+                    "placeholder": "Nombre del Centro Notificador"
+                    },
+                    {
+                    "type": "text",
+                    "name": "question1",
+                    "title": "Nombre Completo del Paciente",
+                    "placeholder": "Nombre Completo del Paciente"
+                    }
+                ]
                 }
             ]
+            },
+            {
+            "name": "page2",
+            "elements": [
+                {
+                "type": "text",
+                "name": "Fecha de Nacimiento",
+                "inputType": "date"
+                },
+                {
+                "type": "text",
+                "name": "CURP",
+                "title": "CURP",
+                "placeholder": "CURP"
+                },
+                {
+                "type": "text",
+                "name": "question2",
+                "title": "Agencia a la que se Notifica",
+                "placeholder": "Agencia a la que se Notifica"
+                },
+                {
+                "type": "comment",
+                "name": "question3",
+                "title": "Acto Notificado",
+                "placeholder": "Acto Notificado"
+                },
+                {
+                "type": "comment",
+                "name": "question4",
+                "title": "Reporte de Lesiones del Paciente",
+                "placeholder": "Reporte de Lesiones del Paciente"
+                },
+                {
+                "type": "comment",
+                "name": "question5",
+                "title": "Reporte de Causa de Muerte Sujeta a Vigilancia Epidemiológica",
+                "placeholder": "Reporte de Causa de Muerte Sujeta a Vigilancia Epidemiológica"
+                },
+                {
+                "type": "text",
+                "name": "question6",
+                "title": "Nombre Completo del Médico Responsable",
+                "placeholder": "Nombre Completo del Médico Responsable"
+                },
+                {
+                "type": "text",
+                "name": "question7",
+                "title": "INE del Médico",
+                "inputType": "number",
+                "placeholder": "Nombre Completo del Médico Responsable"
+                }
+            ]
+            }
+        ],
+        "readOnly": true,
+        "mode": "display",
+        "headerView": "advanced"
         };
 
-        var surveyResponse = { "nps_score": 10, "promoter_features": [ "Performance" ] };
+        var surveyResponse = {"Nombre del Centro Notificador":"sdfsdf","Fecha":"2025-05-28","name":"Nombre del Centro Notificador","question1":"Nombre Completo del Paciente","CURP":"654654","question2":"sdfsdf","question3":"sdfsdfsdf","question4":"sfsdfsdf","question6":"sdsdfsdf","question7":654654654};
 
         var surveyContentDiv = document.getElementById('survey-content');
 
@@ -284,52 +307,87 @@
         surveyContentDiv.innerHTML += headerHtml;
 
         // Render Pages and Elements
-        surveyJson.pages.forEach(function(page) {
-            page.elements.forEach(function(element) {
-                var shouldDisplay = false;
+        function renderSurveyElement(element, response) {
+            var elementHtml = '';
+            var value = response[element.name];
 
-                if (element.type === 'rating') {
-                    shouldDisplay = surveyResponse[element.name] !== undefined;
-                } else if (element.type === 'checkbox') {
-                    shouldDisplay = surveyResponse[element.name] && Array.isArray(surveyResponse[element.name]) && surveyResponse[element.name].length > 0;
-                } else if (element.type === 'comment') {
-                    shouldDisplay = surveyResponse[element.name] !== undefined && surveyResponse[element.name] !== '';
-                }
+            var shouldDisplay = false;
 
-                if (shouldDisplay) {
-                    var elementHtml = '<div class="question-block">';
-                    elementHtml += '<div class="question-title">' + element.title + '</div>';
+            // Determine if the element should be displayed based on its type and response value
+            if (element.type === 'rating') {
+                shouldDisplay = value !== undefined;
+            } else if (element.type === 'checkbox') {
+                shouldDisplay = value && Array.isArray(value) && value.length > 0;
+            } else if (element.type === 'comment' || element.type === 'text' || element.type === 'number') {
+                shouldDisplay = value !== undefined && value !== '';
+            } else if (element.type === 'panel') {
+                // Panels are always displayed, their content depends on sub-elements
+                shouldDisplay = true;
+            }
 
-                    if (element.type === 'rating') {
-                        elementHtml += '<div class="rating-scale">';
-                        for (var i = element.rateMin; i <= element.rateMax; i++) {
-                            elementHtml += '<span ' + (surveyResponse[element.name] !== undefined && surveyResponse[element.name] === i ? 'style="font-weight: bold; color: blue;"' : '') + '>' + i + '</span>';
-                        }
-                        elementHtml += '</div>';
-                        if (element.minRateDescription || element.maxRateDescription) {
-                            elementHtml += '<div class="rating-scale">';
-                            if (element.minRateDescription) elementHtml += '<span>' + element.minRateDescription + '</span>';
-                            if (element.maxRateDescription) elementHtml += '<span>' + element.maxRateDescription + '</span>';
-                            elementHtml += '</div>';
-                        }
-                    } else if (element.type === 'checkbox') {
-                        elementHtml += '<div class="checkbox-choices">';
-                        element.choices.forEach(function(choice) {
-                            var isChecked = surveyResponse[element.name] && Array.isArray(surveyResponse[element.name]) && surveyResponse[element.name].includes(choice);
-                            elementHtml += '<div>' + choice + (isChecked ? ' (X)' : '') + '</div>';
-                        });
-                        if (element.showOtherItem && surveyResponse[element.name] && Array.isArray(surveyResponse[element.name]) && surveyResponse[element.name].includes(element.otherText)) {
-                            var otherValue = surveyResponse[element.name + '_other'] || '';
-                            elementHtml += '<div>' + element.otherText + ' ' + otherValue + '</div>';
-                        }
-                        elementHtml += '</div>';
-                    } else if (element.type === 'comment') {
-                        var commentText = surveyResponse[element.name] !== undefined ? surveyResponse[element.name] : '';
-                        elementHtml += '<div class="comment-box">' + commentText + '</div>';
+            if (!shouldDisplay) {
+                return ''; // If not to be displayed, return empty string
+            }
+
+            elementHtml += '<div class="question-block">';
+            if (element.title) {
+                elementHtml += '<div class="question-title">' + element.title + '</div>';
+            }
+
+            switch (element.type) {
+                case 'rating':
+                    elementHtml += '<div class="rating-scale">';
+                    for (var i = element.rateMin; i <= element.rateMax; i++) {
+                        elementHtml += '<span ' + (value !== undefined && value === i ? 'style="font-weight: bold; color: blue;"' : '') + '>' + i + '</span>';
                     }
                     elementHtml += '</div>';
-                    surveyContentDiv.innerHTML += elementHtml;
-                }
+                    if (element.minRateDescription || element.maxRateDescription) {
+                        elementHtml += '<div class="rating-scale">';
+                        if (element.minRateDescription) elementHtml += '<span>' + element.minRateDescription + '</span>';
+                        if (element.maxRateDescription) elementHtml += '<span>' + element.maxRateDescription + '</span>';
+                        elementHtml += '</div>';
+                    }
+                    break;
+                case 'checkbox':
+                    elementHtml += '<div class="checkbox-choices">';
+                    element.choices.forEach(function(choice) {
+                        var isChecked = value && Array.isArray(value) && value.includes(choice);
+                        elementHtml += '<div>' + choice + (isChecked ? ' (X)' : '') + '</div>';
+                    });
+                    if (element.showOtherItem && value && Array.isArray(value) && value.includes(element.otherText)) {
+                        var otherValue = response[element.name + '_other'] || '';
+                        elementHtml += '<div>' + element.otherText + ' ' + otherValue + '</div>';
+                    }
+                    elementHtml += '</div>';
+                    break;
+                case 'comment':
+                case 'text':
+                case 'number':
+                    var textValue = value !== undefined ? value : '';
+                    elementHtml += '<div class="comment-box">' + textValue + '</div>';
+                    break;
+                case 'panel':
+                    // For panels, recursively render their elements
+                    if (element.elements) {
+                        element.elements.forEach(function(subElement) {
+                            elementHtml += renderSurveyElement(subElement, response);
+                        });
+                    }
+                    break;
+                default:
+                    // Fallback for unhandled types, display title and value if available
+                    if (value !== undefined) {
+                        elementHtml += '<div>' + value + '</div>';
+                    }
+                    break;
+            }
+            elementHtml += '</div>';
+            return elementHtml;
+        }
+
+        surveyJson.pages.forEach(function(page) {
+            page.elements.forEach(function(element) {
+                surveyContentDiv.innerHTML += renderSurveyElement(element, surveyResponse);
             });
         });
 
