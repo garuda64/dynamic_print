@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Elements</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        #container {
+            border: 2px solid #ccc;
+            min-height: 500px;
+            padding: 10px;
+            background-color: #fff;
+            position: relative;
+            flex: 1; /* Make container fill remaining width */
+        }
+        #main-content {
+            display: flex;
+            gap: 20px;
+        }
+        #element-list {
+            width: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .list-item {
+            background-color: #f0f0f0;
+            border: 1px solid #d0d0d0;
+            padding: 8px;
+            margin-bottom: 5px;
+            cursor: grab;
+            font-size: 0.9em;
+        }
+        .draggable-item {
+            background-color: #e0e0e0;
+            border: 1px solid #b0b0b0;
+            padding: 10px;
+            margin: 5px;
+            cursor: grab;
+            position: absolute;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 180px; /* Ensure enough width for content */
+        }
+        .draggable-item label {
+            font-weight: bold;
+        }
+        .draggable-item input[type="text"] {
+            width: 150px;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Elements Designer</h1>
+    <div id="main-content">
+        <div id="non-json-elements" class="card">
+            <h2 class="title-card">Other Elements</h2>
+            <div class="card-body">
+                <div class="list-item" draggable="true" data-type="panel">Panel</div>
+                <div class="list-item" draggable="true" data-type="title">Title</div>
+                <div class="list-item" draggable="true" data-type="image">Image</div>
+            </div>
+        </div>
+        <div id="element-list" class="card">
+            <h2 class="title-card">Available Elements</h2>
+            <div class="card-body">
+                <!-- Element list items will be added here by JavaScript -->
+            </div>
+        </div>
+        <div id="container" class="card card-body"></div>
+    </div>
+
+    <button id="export-button">Exportar HTML</button>
+
+    <script>
+        const data = [
+            { "id": "item1", "title": "Nombre", "value": "Juan" },
+            { "id": "item2", "title": "Apellido", "value": "Pérez" },
+            { "id": "item3", "title": "Edad", "value": "30" },
+            { "id": "item4", "title": "Ciudad", "value": "Madrid" },
+            { "id": "item5", "title": "País", "value": "España" }
+        ];
+
+        const container = document.getElementById('container');
+        const elementList = document.getElementById('element-list');
+        const nonJsonElementList = document.querySelector('#non-json-elements .card-body');
+
+        // Populate the element list from JSON data
+        data.forEach(itemData => {
+            const listItem = document.createElement('div');
+            listItem.classList.add('list-item');
+            listItem.textContent = itemData.title + ': ' + itemData.value;
+            listItem.setAttribute('data-id', itemData.id);
+            listItem.setAttribute('data-title', itemData.title);
+            listItem.setAttribute('data-value', itemData.value);
+            listItem.setAttribute('draggable', 'true');
+            elementList.appendChild(listItem);
+        });
+
+        let activeItem = null;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        let draggedElementData = null; // To store data of the element being dragged from the list
+
+        // Handle dragstart for both JSON and non-JSON list items
+        document.querySelectorAll('.list-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                const type = e.target.getAttribute('data-type');
+                if (type) {
+                    // Non-JSON element
+                    draggedElementData = { type: type };
+                    e.dataTransfer.setData('text/plain', JSON.stringify(draggedElementData));
+                } else if (e.target.classList.contains('list-item')) {
+                    // JSON element
+                    draggedElementData = {
+                        id: e.target.getAttribute('data-id'),
+                        title: e.target.getAttribute('data-title'),
+                        value: e.target.getAttribute('data-value')
+                    };
+                    e.dataTransfer.setData('text/plain', JSON.stringify(draggedElementData));
+                }
+                e.dataTransfer.effectAllowed = 'copy';
+            });
+        });
+
+        container.addEventListener('dragover', e => {
+            e.preventDefault(); // Allow drop
+            e.dataTransfer.dropEffect = 'copy';
+        });
+
+        container.addEventListener('drop', e => {
+            e.preventDefault();
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            let newItem = null;
+
+            if (data.type) {
+                // Handle non-JSON elements
+                switch (data.type) {
+                    case 'panel':
+                        newItem = document.createElement('div');
+                        newItem.classList.add('draggable-item', 'card', 'card-body'); // Example classes for a panel
+                        newItem.textContent = 'Panel Content'; // Placeholder content
+                        break;
+                    case 'title':
+                        newItem = document.createElement('div');
+                        newItem.classList.add('draggable-item', 'non-json-item');
+                        newItem.style.position = 'absolute';
+
+                        const titleInput = document.createElement('input');
+                        titleInput.setAttribute('type', 'text');
+                        titleInput.setAttribute('value', 'Título');
+                        titleInput.classList.add('title-input'); // Add a class for styling if needed
+                        newItem.appendChild(titleInput);
+                        break;
+                    case 'image':
+                        newItem = document.createElement('img');
+                        newItem.classList.add('draggable-item'); // Example classes for an image
+                        newItem.src = 'placeholder.png'; // Placeholder image source
+                        newItem.alt = 'Placeholder Image';
+                        // Add basic styling for image placeholder
+                        newItem.style.width = '100px';
+                        newItem.style.height = 'auto';
+                        break;
+                    default:
+                        console.error('Unknown element type:', data.type);
+                        return;
+                }
+                // Assign a unique ID for dropped non-JSON items
+                newItem.setAttribute('id', data.type + '-' + Date.now());
+
+            } else if (data.id) {
+                // Handle JSON elements (existing logic)
+                const uniqueId = data.id + '-' + Date.now(); // Unique ID for dropped items
+                if (activeItemIds.has(data.id)) {
+                    return; // Prevent adding duplicates
+                }
+
+                newItem = document.createElement('div');
+                newItem.classList.add('draggable-item', 'flex', 'gap-12'); // Add flex and gap-12 classes
+                newItem.setAttribute('id', uniqueId);
+                newItem.dataset.title = data.title;
+                newItem.dataset.value = data.value;
+
+                const label = document.createElement('label');
+                label.textContent = data.title + ':';
+                newItem.appendChild(label);
+
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('value', data.value);
+                newItem.appendChild(input);
+
+                // Add the item's original ID to the set of active items
+                activeItemIds.add(data.id);
+                updateListItemDraggability(data.id);
+            }
+
+            if (newItem) {
+                container.appendChild(newItem);
+
+                // Position the new item at the drop location
+                const containerRect = container.getBoundingClientRect();
+                let newX = e.clientX - containerRect.left - (newItem.offsetWidth / 2);
+                let newY = e.clientY - containerRect.top - (newItem.offsetHeight / 2);
+
+                // Clamp to container boundaries
+                newX = Math.max(0, Math.min(newX, containerRect.width - newItem.offsetWidth));
+                newY = Math.max(0, Math.min(newY, containerRect.offsetHeight - newItem.offsetHeight));
+
+                newItem.style.left = newX + 'px';
+                newItem.style.top = newY + 'px';
+
+                // Make the newly dropped item draggable and deletable
+                newItem.addEventListener('mousedown', dragStart);
+                newItem.addEventListener('dblclick', deleteItem);
+            }
+        });
+
+        // Set to keep track of active item IDs in the container (only for JSON items)
+        const activeItemIds = new Set();
+
+        // Function to handle item deletion
+        function deleteItem(e) {
+            const itemToDelete = e.currentTarget;
+            const originalId = itemToDelete.getAttribute('id');
+            // Check if it's a JSON item before trying to update list item draggability
+            if (originalId.startsWith('item')) {
+                 const jsonItemId = originalId.split('-')[0];
+                 activeItemIds.delete(jsonItemId);
+                 updateListItemDraggability(jsonItemId);
+            }
+            container.removeChild(itemToDelete);
+        }
+
+        // Function to update the draggability of list items (only for JSON items)
+        function updateListItemDraggability(id) {
+            const listItem = elementList.querySelector(`[data-id="${id}"]`);
+            if (listItem) {
+                if (activeItemIds.has(id)) {
+                    listItem.setAttribute('draggable', 'false');
+                    listItem.style.opacity = '0.5';
+                    listItem.style.cursor = 'not-allowed';
+                } else {
+                    listItem.setAttribute('draggable', 'true');
+                    listItem.style.opacity = '1';
+                    listItem.style.cursor = 'grab';
+                }
+            }
+        }
+
+        // Initial update for all JSON list items based on current active items (if any)
+        data.forEach(itemData => updateListItemDraggability(itemData.id));
+
+        // Existing drag functionality for items already in the container
+        container.addEventListener('mousedown', dragStart);
+        container.addEventListener('mouseup', dragEnd);
+        container.addEventListener('mousemove', drag);
+
+        function dragStart(e) {
+            if (e.target.classList.contains('draggable-item')) {
+                activeItem = e.target;
+                initialX = e.clientX - activeItem.offsetLeft;
+                initialY = e.clientY - activeItem.offsetTop;
+
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+            }
+        }
+
+        function drag(e) {
+            if (activeItem) {
+                e.preventDefault();
+
+                let newX = e.clientX - initialX;
+                let newY = e.clientY - initialY;
+
+                // Get container boundaries
+                const containerRect = container.getBoundingClientRect();
+                const itemRect = activeItem.getBoundingClientRect();
+
+                // Clamp newX within container boundaries
+                newX = Math.max(0, Math.min(newX, containerRect.width - itemRect.width));
+                // Clamp newY within container boundaries
+                newY = Math.max(0, Math.min(newY, containerRect.height - itemRect.height));
+
+                activeItem.style.left = `${newX}px`;
+                activeItem.style.top = `${newY}px`;
+            }
+        }
+
+        function dragEnd() {
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', dragEnd);
+            activeItem = null;
+        }
+
+    </script>
+
+        // Function to export canvas content as HTML
+        function exportCanvasAsHTML() {
+            const canvasContent = container.innerHTML;
+
+            const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exported Canvas</title>
+    <style>
+        /* Include necessary styles for the exported content */
+        .draggable-item {
+            background-color: #e0e0e0;
+            border: 1px solid #b0b0b0;
+            padding: 10px;
+            margin: 5px;
+            cursor: grab;
+            position: absolute;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 180px;
+        }
+        .draggable-item label {
+            font-weight: bold;
+        }
+        .draggable-item input[type="text"] {
+            width: 150px;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .card-body {
+            padding: 10px;
+        }
+        .title-card {
+            padding: 10px;
+            margin: 0;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+        }
+        .non-json-item {
+            /* Add specific styles for non-JSON items if needed */
+        }
+        .title-input {
+             /* Add specific styles for title input if needed */
+        }
+    </style>
+</head>
+<body>
+    <div id="exported-container" style="position: relative; width: 100%; height: auto;">
+        ${canvasContent}
+    </div>
+</body>
+</html>
+`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'canvas_export.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Add event listener to the export button
+        document.getElementById('export-button').addEventListener('click', exportCanvasAsHTML);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{
+    "title": "Hojas de notificación al Ministerio Público",
+    "pages": [
+        {
+            "name": "page1",
+            "elements": [
+                {
+                    "type": "panel",
+                    "name": "panel1",
+                    "title": "Datos",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "name": "Nombre del Centro Notificador",
+                            "placeholder": "Nombre del Centro Notificador"
+                        },
+                        {
+                            "type": "text",
+                            "name": "Fecha",
+                            "inputType": "date"
+                        },
+                        {
+                            "type": "text",
+                            "name": "name",
+                            "title": "Nombre del Centro Notificador",
+                            "placeholder": "Nombre del Centro Notificador"
+                        },
+                        {
+                            "type": "text",
+                            "name": "question1",
+                            "title": "Nombre Completo del Paciente",
+                            "placeholder": "Nombre Completo del Paciente"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "page2",
+            "elements": [
+                {
+                    "type": "text",
+                    "name": "Fecha de Nacimiento",
+                    "inputType": "date"
+                },
+                {
+                    "type": "text",
+                    "name": "CURP",
+                    "title": "CURP",
+                    "placeholder": "CURP"
+                },
+                {
+                    "type": "text",
+                    "name": "question2",
+                    "title": "Agencia a la que se Notifica",
+                    "placeholder": "Agencia a la que se Notifica"
+                },
+                {
+                    "type": "comment",
+                    "name": "question3",
+                    "title": "Acto Notificado",
+                    "placeholder": "Acto Notificado"
+                },
+                {
+                    "type": "comment",
+                    "name": "question4",
+                    "title": "Reporte de Lesiones del Paciente",
+                    "placeholder": "Reporte de Lesiones del Paciente"
+                },
+                {
+                    "type": "comment",
+                    "name": "question5",
+                    "title": "Reporte de Causa de Muerte Sujeta a Vigilancia Epidemiológica",
+                    "placeholder": "Reporte de Causa de Muerte Sujeta a Vigilancia Epidemiológica"
+                },
+                {
+                    "type": "text",
+                    "name": "question6",
+                    "title": "Nombre Completo del Médico Responsable",
+                    "placeholder": "Nombre Completo del Médico Responsable"
+                },
+                {
+                    "type": "text",
+                    "name": "question7",
+                    "title": "INE del Médico",
+                    "inputType": "number",
+                    "placeholder": "Nombre Completo del Médico Responsable"
+                }
+            ]
+        }
+    ],
+    "readOnly": true,
+    "mode": "display",
+    "headerView": "advanced"
+}

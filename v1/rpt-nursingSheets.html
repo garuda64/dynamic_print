@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      @font-face {
+        font-family: Cocogoose Pro;
+      }
+
+      @font-face {
+        font-family: AvenirNext LT Pro Regular;
+      }
+
+      @font-face {
+        font-family: AvenirNext LT Pro Bold;
+      }
+
+      @font-face {
+        font-family: Avenir Next Cyr Medium;
+      }
+
+      @font-face {
+        font-family: Avenir Next Cyr;
+      }
+
+      body {
+        background: rgba(253, 251, 249, 1);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .container-form {
+        margin: auto;
+        font-family: AvenirNext LT Pro Regular;
+        padding: 0;
+        margin: 0;
+      }
+
+      .container {
+        display: flex;
+        top: 0;
+        position: fixed;
+        width: 100%;
+        inset-inline-start: 0;
+        inset-inline-end: 0;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .container .content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-image: linear-gradient(0deg, #f6f0ff, #f6f0ff),
+          linear-gradient(0deg, #ffffff, #ffffff);
+        -webkit-print-color-adjust: exact;
+        border: 1px solid #9e969657;
+        border-bottom: 1.5px solid #9e969657;
+        border-right: 1.5px solid #9e969657;
+        padding: 8px 18px 8px 18px;
+        border-radius: 0px 0px 20px 20px;
+        height: 100%;
+        width: 100%;
+        margin: 0 29px;
+      }
+
+      .container .content div img {
+        width: 75px;
+      }
+
+      .container .content div h1 {
+        color: #634098;
+        margin-top: 5px;
+        font-size: 14px;
+        font-family: Cocogoose Pro;
+        font-weight: 400;
+      }
+
+      .container .content div .text-date {
+        font-size: 10px;
+        color: #634098;
+        margin-top: 3px;
+        font-family: Avenir Next Cyr;
+        font-weight: bold;
+      }
+
+      .container .content .info {
+        position: relative;
+        display: flex;
+        height: 30px;
+        min-width: 120px;
+        top: 16px;
+        justify-content: space-between;
+        text-align: center;
+      }
+
+      .container .content .info div {
+        min-width: 120px;
+        font-size: 9px;
+        font-family: Avenir Next Cyr Medium;
+        font-weight: bold;
+        position: fixed;
+        padding: 0px 5px;
+      }
+
+      .container .content .info div::before {
+        content: "";
+        position: absolute;
+        height: 30px;
+        width: 1px;
+        opacity: 0.5;
+        left: 0;
+        bottom: 2px;
+        background-color: rgba(38, 38, 38, 0.5);
+      }
+
+      .container .content .info div .labelDate {
+        color: #634098;
+        font-family: Avenir Next Cyr;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .col {
+        width: 50%;
+      }
+
+      .col-25 {
+        width: 25%;
+      }
+
+      .col-33 {
+        width: 33%;
+      }
+      .col-67 {
+        width: 67%;
+      }
+
+      .col-75 {
+        width: 75%;
+      }
+
+      .form-group {
+        margin-top: 15px;
+      }
+
+      label {
+        color: #634098;
+        width: 100%;
+        display: block;
+        font-family: Avenir Next Cyr Medium;
+        font-size: 8px;
+        font-weight: bold;
+        margin-bottom: 7px;
+      }
+
+      input,
+      .p-section {
+        border-radius: 10px;
+        padding: 10px 18px;
+        background-color: #6340980d;
+        border: 0;
+        width: 100%;
+        color: #262626;
+        font-size: 10px;
+        font-family: Avenir Next Cyr;
+        font-weight: 600;
+        min-height: 32px;
+      }
+
+      .card {
+        background: rgba(253, 251, 249, 1);
+        margin: 15px 0px;
+        border-radius: 20px;
+        border: 1px solid #9e969657;
+        border-bottom: 1.5px solid #9e969657;
+        border-right: 1.5px solid #9e969657;
+      }
+
+      .card-body {
+        padding: 12px 25px 25px;
+      }
+
+      .card .title-card {
+        text-transform: capitalize;
+        padding: 13px 0px 10px 25px;
+        border-bottom: 1px solid #f6f0ff;
+        font-family: AvenirNext LT Pro Bold;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: bold;
+        color: #262626;
+      }
+      .card .subtitle {
+        text-transform: capitalize;
+        padding: 10px 0px 5px 25px;
+        font-family: AvenirNext LT Pro Bold;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: bold;
+        color: #262626;
+      }
+
+      .card .border-bottom {
+        border-bottom: 1px solid #f6f0ff;
+      }
+
+      .gap-12 {
+        gap: 12px;
+      }
+
+      .text-start {
+        text-align: start;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .text-end {
+        text-align: end;
+      }
+
+      .section-signature {
+        margin-top: 20px;
+      }
+
+      .section-signature label {
+        color: rgba(38, 38, 38, 1);
+        font-size: 12px;
+      }
+
+      .section-signature p {
+        font-size: 10px;
+      }
+
+      input.signature {
+        height: 40px;
+        margin-bottom: 10px;
+        width: 450px;
+        font-family: AvenirNext LT Pro Regular;
+        font-weight: normal;
+        font-size: 14px;
+      }
+
+      .mt-0 {
+        margin-top: 0px !important;
+      }
+
+      table {
+        margin: 0px 0px;
+        width: 100%;
+        border-radius: 22px;
+        overflow: hidden;
+        table-layout: fixed;
+        border: 1px solid white;
+      }
+
+      table thead {
+        font-family: AvenirNext LT Pro Bold;
+        background: rgba(0, 205, 205, 0.05);
+        height: 30px;
+        font-size: 8px;
+        text-align: left;
+      }
+
+      table thead p {
+        padding: 10px 15px;
+        color: #634098;
+      }
+
+      table tbody tr {
+        height: 30px;
+        text-align: left;
+        font-size: 10px;
+        font-family: Avenir Next Cyr;
+        font-weight: 600;
+      }
+
+      table tbody tr p {
+        padding: 5px 15px;
+      }
+
+      table tbody tr:nth-child(odd) td {
+        background-color: #6340980d;
+      }
+
+      table tbody tr:nth-child(even) td {
+        background-color: white;
+      }
+
+      @media print {
+        .pagebreak {
+          page-break-before: always;
+          margin-top: 0px;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="container-form">
+    <div class="card mt-0">
+      <h1 class="title-card">Datos del paciente</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label for="name">Fecha de creación</label>
+            <input type="text" value="{{#dateToFormat Model.Date
+            "dd/MM/yyyy"}}{{/dateToFormat}}" />
+          </div>
+          <div class="col-25">
+            <label for="name">Expediente</label>
+            <input type="text" value="{{Patient.ClinicalRecord}}" />
+          </div>
+          <div class="col-25">
+            <label for="name">N° Identificación</label>
+            <input type="text" value="{{#getValueOrNotApplyText Patient.Document}}{{/getValueOrNotApplyText}}" />
+          </div>
+        </div>
+        <div class="form-group flex gap-12">
+          <div class="col">
+            <label for="name">Centro</label>
+            <input type="text" value="{{Patient.Center}}" />
+          </div>
+          <div class="col-25">
+            <label for="name">Género</label>
+            <input type="text" value="{{#gender Patient.Gender}}{{/gender}}" />
+          </div>
+          <div class="col-25">
+            <label for="name">Edad (años)</label>
+            <input type="text" value="{{Patient.Age}}" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" value="{{Patient.FullName}}" />
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h1 class="title-card">Datos Generales</h1>
+      <div class="card-body">
+        <div class="mb-15">
+          <div class="flex gap-12">
+            <div class="col">
+              <label for="name">Tipo de Consulta</label>
+              <input
+                type="text"
+                value="{{Model.ConsultationTypeDescription}}"
+              />
+            </div>
+            <div class="col">
+              <label for="name">Riesgo de Caída </label>
+              <input type="text" value="{{Model.FallRisk}}" />
+            </div>
+            <div class="col">
+              <label>Servicio Médico</label>
+              <input type="text" value="{{Model.MedicalServiceDescription}}" />
+            </div>
+            <div class="col">
+                <label>Alergias</label>
+                {{#if Model.HasAllergies }}
+                <input value="Si" />
+                {{else}}
+                <input value="No" />
+                {{/if}}
+              </div>
+          </div>
+        </div>
+        {{#if Model.HasAllergies }}
+        <div class="form-group">
+          <label>En caso afirmativo, Cuál(es) alergias?</label>
+          <p class="p-section">{{Model.AllergyDetails}}</p>
+        </div>
+        {{/if}}
+
+        <div class="form-group">
+          <label>Médico tratante</label>
+          <p class="p-section">
+            {{#getValueOrNotApplyText
+            Model.AttendingPhysician}}{{/getValueOrNotApplyText}}
+          </p>
+        </div>             
+      </div>
+    </div>   
+
+    <div class="card">
+      <h1 class="title-card">Terapia</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Tiempo en el programa de diálisis peritoneal (meses)</label>
+            <input type="text" value="{{Model.MonthsInDialysisProgram}}" />
+          </div>          
+          <div class="col">
+            <label for="name">Tipo de Catéter</label>
+            <input type="text" value="{{Model.CatheterTypeDescription}}" />
+          </div>
+        </div>
+        <div class="flex gap-12 form-group">
+          <div class="col">
+            <label>Fecha de Colocación Acceso Peritoneal</label>
+            <input type="text" value="{{#dateToFormat
+            Model.PeritonealAccessPlacementDate "dd/MM/yyyy"}}{{/dateToFormat}}"
+            />
+          </div>
+          <div class="col">
+            <label>Técnica de colocación de acceso peritoneal</label>
+            <input
+              type="text"
+              value="{{Model.CatheterPlacementTechniqueDescription}}"
+            />
+          </div>
+        </div>
+        <div class="mb-15">
+          <div class="form-group flex gap-12">
+            <div class="col">
+              <label for="name">No. De Catéteres</label>
+              <input type="text" value="{{Model.CatheterCount}}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{#if Model.Allergies.length}}
+    <div class="card pagebreak">
+    {{else}}
+      <div class="card">
+    {{/if}}
+      <h1 class="title-card">Alergias</h1>
+      <div class="card-body">
+          <label>Alergias</label>
+          {{#if Model.Allergies.length}}
+          <table>
+              <thead>
+                  <tr>
+                      <th colspan="3"><p>Nombre</p></th>
+                      <th colspan="5"><p>Comentarios</p></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {{#each Model.Allergies}}
+                  <tr>
+                      <td colspan="3"><p>{{#capitalizeFirstLetter Name}}{{/capitalizeFirstLetter}}</p></td>
+                      <td colspan="5"><p>{{#getValueOrNotApplyText  Commentaries }}{{/getValueOrNotApplyText}}</p></td>
+                  </tr>
+                  {{/each}}
+              </tbody>
+          </table>
+          {{else}}
+          <div class="form-group">
+              <input class="text-p" value="No se encontraron alergias">
+          </div>
+          {{/if}}          
+      </div>
+    </div>
+
+    {{#if Model.Allergies.length}}
+      <div class="card">
+    {{else}}
+      <div class="card pagebreak">
+    {{/if}}
+      <h1 class="title-card">Diagnósticos</h1>
+      <div class="card-body">
+          <label>Diagnósticos</label>
+          {{#if Model.Diagnoses.length}}
+          <table>
+              <thead>
+                  <tr>
+                      <th colspan="3"><p>Nombre</p></th>
+                      <th colspan="5"><p>Comentarios</p></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {{#each Model.Diagnoses}}
+                  <tr>
+                      <td colspan="3"><p>{{Code}} - {{#capitalizeFirstLetter Name}}{{/capitalizeFirstLetter}}</p></td>
+                      <td colspan="5"><p>{{Comments}}</p></td>
+                  </tr>
+                  {{/each}}
+              </tbody>
+          </table>
+          {{else}}
+          <div class="form-group">
+              <input class="text-p" value="No se encontraron diagnósticos">
+          </div>
+          {{/if}}          
+      </div>
+  </div>
+
+    <div class="card pagebreak">
+      <h1 class="title-card">
+        Modalidad de terapia {{Model.TherapyModalityDescription}}
+      </h1>
+      <div class="card-body">
+        {{#if Model.Dpa.Time }}     
+            <div class="flex gap-12">
+              <div class="col">
+                <label>Tiempo (Hrs - HH:MM)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.Time }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+              <div class="col">
+                <label>Volumen total (mL)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.TotalVolume }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+              <div class="col">
+                <label>Volumen de última infusión (mL)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.LastInfusionVolume }}{{/getValueOrNotApplyText}}"
+                />
+              </div>              
+            </div>
+            <div class="form-group flex gap-12">    
+              <div class="col">
+                <label>Volumen de infusión (mL)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.InfusionVolume }}{{/getValueOrNotApplyText}}"
+                />
+              </div>          
+              <div class="col">
+                <label>Número de ciclos</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.CyclesCount }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+              <div class="col">
+                <label>Tiempo de permanencia por ciclo (min)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.TimePerCycle }}{{/getValueOrNotApplyText}}"
+                />
+              </div>             
+            </div>            
+            <div class="form-group flex gap-12">
+              <div class="col">
+                <label>Aviso de drenaje inicial (mL)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.InitialDrainNotice }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+              <div class="col">
+                <label>Objetivo de ultrafiltración (mL)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.UltrafiltrationTarget }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+              <div class="col">
+                <label>Dextrosa solución 1 (%)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.DextroseSolutionOne }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+            </div>
+            <div class="form-group flex gap-12">              
+              <div class="col">
+                <label>Dextrosa solución 2 (%)</label>
+                <input
+                {{#ifEq model.Dpa.DextroseSolutionTwo 7.25}}
+                value="7.25% (Icodextrina)"
+                {{else}}
+                value="{{#getValueOrNotApplyText model.Dpa.DextroseSolutionTwo}}{{/getValueOrNotApplyText}}"
+                {{/ifEq}}
+              />
+              </div>
+              <div class="col">
+                <label>Dextrosa solución 3 (%)</label>
+                <input
+                  {{#ifEq model.Dpa.DextroseSolutionThree 7.25}}
+                  value="7.25% (Icodextrina)"
+                  {{else}}
+                  value="{{#getValueOrNotApplyText model.Dpa.DextroseSolutionThree}}{{/getValueOrNotApplyText}}"
+                  {{/ifEq}}
+                />
+              </div>
+              <div class="col">
+                <label>Dextrosa de última infusión</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.LastInfusionDextroseInSpanish }}{{/getValueOrNotApplyText}}"
+                />
+              </div>              
+            </div>           
+            <div class="form-group flex gap-12">  
+              <div class="col-33">
+                <label>Marea (%)</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.MareaDescription }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+
+              <div class="col-67">
+                <label>Días de terapia</label>
+                <input
+                  value="{{#getValueOrNotApplyText  Model.Dpa.TherapyDaysInSpanish }}{{/getValueOrNotApplyText}}"
+                />
+              </div>
+            </div>         
+        {{else}}               
+        <div class="">
+            <label>Prescripción</label>
+            <p class="p-section">{{Model.Dpca.Prescription}}</p>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="card">
+      <h1 class="title-card">Dolor</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Dolor</label>
+            {{#if Model.Pain }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+
+          <div class="col">
+            <label>Intensidad EVA</label>
+            <input value="{{Model.PainIntensityEVADescription}}" />
+          </div>
+
+        </div>
+        
+        {{#if Model.Pain }}
+        <div class="form-group">
+          <label>Localización</label>
+          <p class="p-section">{{Model.PainLocation}}</p>
+        </div>
+        {{/if}}
+        
+      </div>
+    </div>
+    <div class="card">
+      <h1 class="title-card">Índice de Diálisis - Neurológico</h1>
+      <div class="card-body border-bottom">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Insomnia</label>
+            <input value="{{Model.InsomniaDescription}}" />
+          </div>
+          <div class="col">
+            <label>Debilidad</label>
+            <input value="{{Model.WeaknessDescription}}" />
+          </div>
+          <div class="col">
+            <label>Somnolencia</label>
+            {{#if Model.Drowsiness }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+          <div class="col">
+            <label>Desorientación</label>
+            {{#if Model.Disorientation }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+        </div>        
+      </div>
+    </div>
+
+    <div class="card ">
+      <h1 class="title-card">Índice de Diálisis - Gastrointestinal</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Disgeusia</label>
+            <input value="{{Model.DysgeusiaDescription}}" />
+          </div>
+          <div class="col">
+            <label>Anorexia</label>
+            <input value="{{Model.AnorexiaDescription}}" />
+          </div>
+          <div class="col">
+            <label>Naúsea</label>
+            <input value="{{Model.NauseaDescription}}" />
+          </div>
+          <div class="col">
+            <label>Vómito</label>
+            <input value="{{Model.VomitingDescription}}" />
+          </div>
+        </div>
+       
+        <div class="form-group">
+          <label>Índice de Diálisis</label>
+          <input value="{{Model.DialysisIndexDescription}}" />
+        </div>
+      </div>
+    </div>
+    <div class="card pagebreak">
+      <h1 class="title-card">Evaluación Subjetiva</h1>
+      <div class="card-body border-bottom">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Meteorismo</label>
+            {{#if Model.Meteorism }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+          <div class="col">
+            <label>Saciedad temprana</label>
+            {{#if Model.EarlySatiety }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+          <div class="col">
+            <label>Pirosis</label>
+            {{#if Model.Heartburn }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+        </div>
+        <div class="form-group flex gap-12">         
+          <div class="col">
+            <label>Prurito</label>
+            {{#if Model.Pruritus }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+          <div class="col">
+            <label>Calambres</label>
+            {{#if Model.Cramps }}
+            <input value="Si" />
+            {{else}}
+            <input value="No" />
+            {{/if}}
+          </div>
+          <div class="col">
+            <label>Escala Bristol</label>
+            <input value="{{Model.BristolScaleDescription}}" />
+          </div>
+        </div>       
+        <div class="form-group">
+          <label>Otros</label>
+          <p class="p-section">{{#getValueOrNotApplyText Model.Others}}{{/getValueOrNotApplyText}}</p>         
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h1 class="title-card">Signos Vitales</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Tensión Arterial sentado(mmHg)</label>
+            <input value="{{Model.Sign.Signs.6}}" />
+          </div>
+          <div class="col">
+            <label>Tensión Arterial de pie(mmHg)</label>
+            <input value="{{#getValueOrNotApplyText Model.Sign.Signs.49}}{{/getValueOrNotApplyText}}" />
+          </div>
+          <div class="col">
+            <label>Peso (kg)</label>
+            <input value="{{Model.Sign.Signs.1}}" />
+          </div>
+        </div>
+        <div class="form-group flex gap-12">         
+          <div class="col">
+            <label>Talla (cm)</label>
+            <input value="{{Model.Sign.Signs.3}}" />
+          </div>
+          <div class="col">
+            <label>ASC (m²)</label>
+            <input value="{{Model.Sign.Signs.48}}" />
+          </div>
+          <div class="col">
+            <label>Frecuencia Cardiaca (latidos x')</label>
+            <input value="{{Model.Sign.Signs.11}}" />
+          </div>
+        </div>        
+        <div class="form-group flex gap-12">
+          <div class="col">
+            <label>Saturación O² (%)</label>
+            <input value="{{Model.Sign.Signs.12}}" />
+          </div>
+          <div class="col">
+            <label>Frecuencia Respiratoria (r x')</label>
+            <input value="{{Model.Sign.Signs.5}}" />
+          </div>
+          <div class="col">
+            <label>Glucosa postprandial mg/dL</label>
+            <input value="{{Model.Sign.Signs.50}}" />
+          </div>
+        </div> 
+        <div class="form-group flex gap-12">
+          <div class="col">
+            <label>Glicemia en ayunas mg/dL</label>
+            <input value="{{Model.Sign.Signs.59}}" />
+          </div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>      
+      </div>
+    </div>
+    <div class="card ">
+      <h1 class="title-card">Balance Hídrico</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Ingesta de líquidos 24 h (mL)</label>
+            <input value="{{#getValueOrNotApplyText Model.FluidIntake24H}}{{/getValueOrNotApplyText}}" />
+          </div>
+          <div class="col">
+            <label>Volumen Urinario (mL)</label>
+            <input value="{{#getValueOrNotApplyText Model.UrinaryVolume}}{{/getValueOrNotApplyText}}" />
+          </div>
+          <div class="col">
+            <label>UF Nocturna (mL)</label>
+            <input value="{{Model.NocturnalUF}}" />
+          </div>
+        </div>
+        <div class="form-group flex gap-12">          
+          <div class="col">
+            <label>UF Diurna (mL)</label>
+            <input value="{{Model.DiurnalUF}}" />
+          </div>
+          <div class="col">
+            <label>Balance Hídrico (mL)</label>
+            <input value="{{#getValueOrNotApplyText Model.FluidBalance}}{{/getValueOrNotApplyText}}" />
+          </div>
+          <div class="col"></div>
+        </div>        
+      </div>
+    </div>
+    <div class="card">
+      <h1 class="title-card">Sitio Salida</h1>
+      <div class="card-body">
+        <div class="">
+          <label>Sitio Salida</label>
+          <p class="p-section">{{Model.ExitSiteDescription}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card pagebreak">
+      <h1 class="title-card">Peso Meta</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Hipertensión</label>
+            <input value="{{Model.HypertensionDescription}}" />
+          </div>
+          <div class="col">
+            <label>Tratamiento antihipertensivo</label>
+            <input value="{{Model.AntihypertensiveTreatmentDescription}}" />
+          </div>
+          <div class="col">
+            <label>Edema</label>
+            <input value="{{Model.EdemaDescription}}" />
+          </div>
+          <div class="col">
+            <label>Peso Meta</label>
+            <input value="{{Model.TargetWeightDescription}}" />
+          </div>
+        </div>        
+      </div>
+    </div>
+
+    <div class="card">
+      <h1 class="title-card">Habitus Exterior</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Marcha</label>
+            <p class="p-section">
+              {{#if Model.GaitsLists}} {{#each
+              Model.GaitsLists}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Patrón de marcha</label>
+            <p class="p-section">
+              {{#if Model.GaitPatternsLists}} {{#each
+              Model.GaitPatternsLists}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Estado de conciencia</label>
+            <p class="p-section">
+              {{#if Model.ConsciousnessStatesLists}} {{#each
+              Model.ConsciousnessStatesLists}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Actitud en la exploración</label>
+            <p class="p-section">
+              {{#if Model.ExplorationAttitudeList}} {{#each
+              Model.ExplorationAttitudeList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+        </div>        
+        <div class="form-group flex gap-12">
+          <div class="col">
+            <label>Expresión facial</label>
+            <p class="p-section">
+              {{#if Model.FacialExpressionsList}} {{#each
+              Model.FacialExpressionsList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Lenguaje</label>
+            <p class="p-section">
+              {{#if Model.LanguagesList}} {{#each
+              Model.LanguagesList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Vestimenta</label>
+            <p class="p-section">
+              {{#if Model.ClothingsList}} {{#each
+              Model.ClothingsList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Higiene personal</label>
+            <p class="p-section">
+              {{#if Model.PersonalHygienesList}} {{#each
+              Model.PersonalHygienesList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+        </div>
+        <div class="form-group flex gap-12">
+          <div class="col">
+            <label>Olor corporal</label>
+            <p class="p-section">
+              {{#if Model.BodyOdorsList}} {{#each
+              Model.BodyOdorsList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Movimientos involuntarios</label>
+            <p class="p-section">
+              {{#if Model.InvoluntaryMovementsList}} {{#each
+              Model.InvoluntaryMovementsList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+          <div class="col">
+            <label>Color de la piel</label>
+            <p class="p-section">
+              {{#if Model.SkinColorsList}} {{#each
+              Model.SkinColorsList}}{{#unless @first}},
+              {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{#if Model.Dpa.Time }}
+    <div class="card">
+      <h1 class="title-card">Plataforma ShareSource</h1>
+      <div class="card-body">
+        <div class="">
+          <label>Compromiso de la Terapia DPA</label>
+          <p class="p-section">{{Model.TherapyImpactLevelDpaDescription}}</p>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+    <div class="card">
+      <h1 class="title-card">Plataforma ShareSource - Alarmas</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+          <div class="col">
+            <label>Bajo volumen de drenado</label>
+            <input
+              value="{{#getValueOrNotApplyText Model.LowDrainedVolume}}{{/getValueOrNotApplyText}}"
+            />
+          </div>
+          <div class="col">
+            <label>Baja ultrafiltración</label>
+            <input
+              value="{{#getValueOrNotApplyText Model.LowUltrafiltration}}{{/getValueOrNotApplyText}}"
+            />
+          </div>
+          <div class="col">
+            <label>Revise línea de paciente</label>
+            <input
+              value="{{#getValueOrNotApplyText Model.CheckPatientLine}}{{/getValueOrNotApplyText}}"
+            />
+          </div>
+        </div>
+        <div class="form-group flex gap-12">          
+          <div class="col">
+            <label>Revise línea de suministro</label>
+            <input
+              value="{{#getValueOrNotApplyText Model.CheckSupplyLine}}{{/getValueOrNotApplyText}}"
+            />
+          </div>
+          <div class="col">
+            <label>Flujo lento</label>
+            <input
+              value="{{#getValueOrNotApplyText Model.SlowFlow}}{{/getValueOrNotApplyText}}"
+            />
+          </div>
+          <div class="col"></div>
+        </div>       
+      </div>
+    </div>
+    <div class="card ">
+      <h1 class="title-card">Plataforma ShareSource - Tiempos de Terapia</h1>
+      <div class="card-body">
+        <div class="flex gap-12">
+            <div class="col">
+            <label>Tiempo permanencia perdido (hh:mm)</label>
+            <p class="p-section">
+                {{#getValueOrNotApplyText
+                Model.LostDwellTime}}{{/getValueOrNotApplyText}}
+            </p>
+            </div>
+            <div class="col">
+            <label>Tiempo promedio de infusión (hh:mm)</label>
+            <p class="p-section">
+                {{#getValueOrNotApplyText
+                Model.AverageInfusionHourTime}}{{/getValueOrNotApplyText}}
+            </p>
+            </div>
+            <div class="col">
+            <label>Tiempo promedio de drenaje (hh:mm)</label>
+            <p class="p-section">
+                {{#getValueOrNotApplyText
+                Model.AverageDrainHourTime}}{{/getValueOrNotApplyText}}
+            </p>
+            </div>
+            <div class="col">
+            <label>Tiempo promedio de permanencia (hh:mm)</label>
+            <p class="p-section">
+                {{#getValueOrNotApplyText
+                Model.AverageDwellHourTime}}{{/getValueOrNotApplyText}}
+            </p>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="card pagebreak">
+      <h1 class="title-card">Intervenciones de educación y prevención</h1>
+      <div class="card-body">
+        <div class="">
+          <label>Tipo</label>
+          <p class="p-section">
+            {{#if Model.InterventionTypeList}} {{#each
+            Model.InterventionTypeList}}{{#unless @first}},
+            {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+          </p>
+        </div>
+        <div class="form-group">
+          <label>Intervención</label>
+          <p class="p-section">
+            {{#getValueOrNotApplyText
+            Model.InterventionDetails}}{{/getValueOrNotApplyText}}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h1 class="title-card">Procedimientos</h1>
+      <div class="card-body">
+        <div class="">
+          <label>Realizado</label>
+          <p class="p-section">
+            {{#if Model.PerformedProcedureList}} {{#each
+            Model.PerformedProcedureList}}{{#unless @first}},
+            {{/unless}}{{this}}{{/each}} {{else}} N/A {{/if}}
+          </p>
+        </div>
+        <div class="form-group">
+          <label>Observación</label>
+          <p class="p-section">
+            {{#getValueOrNotApplyText
+            Model.ProcedureObservation}}{{/getValueOrNotApplyText}}
+          </p>
+        </div>
+      </div>
+    </div>
+    {{#if Model.Comments}}
+    <div class="card pagebreak">
+    {{else}}
+    <div class="card">
+    {{/if}}
+      <h1 class="title-card">Comentarios</h1>
+      <div class="card-body">
+        <div class="">
+          <label>Comentarios</label>
+          <p class="p-section">
+            {{#getValueOrNotApplyText
+            Model.Comments}}{{/getValueOrNotApplyText}}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-signature card-body form-group">
+        <input type="text" class="signature" value="{{#getValueOrNotApplyText
+            Doctor.FullName}}{{/getValueOrNotApplyText}}" />
+        <label for="name">Creador de la hoja de enfermería</label>
+        <p class="signing">Firma</p>
+    </div>
+
+  </body>
+</html>

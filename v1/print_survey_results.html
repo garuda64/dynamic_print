@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Survey Results Print</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        @media print {
+            body {
+                margin: 0;
+            }
+            .container {
+                border: none;
+                box-shadow: none;
+            }
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resultados de la Encuesta</h1>
+        <div id="results"></div>
+        <button onclick="window.print()">Imprimir</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script type="text/javascript">
+        var surveyData = {
+            "nps_score": 10,
+            "promoter_features": ["Performance"]
+        };
+
+        var resultsDiv = document.getElementById('results');
+
+        var htmlContent = '';
+        htmlContent += '<h2 class="draggable-item">Puntuación NPS: ' + surveyData.nps_score + '</h2>';
+
+        if (surveyData.promoter_features && surveyData.promoter_features.length > 0) {
+            htmlContent += '<h2 class="draggable-item">Características más valoradas:</h2>';
+            htmlContent += '<ul class="draggable-list">';
+            surveyData.promoter_features.forEach(function(feature) {
+                htmlContent += '<li class="draggable-item">' + feature + '</li>';
+            });
+            htmlContent += '</ul>';
+        }
+
+        resultsDiv.innerHTML = htmlContent;
+
+        // Initialize SortableJS on the results div
+        new Sortable(resultsDiv, {
+            animation: 150,
+            handle: '.draggable-item' // Specify a handle if you want to drag only by a specific part of the item
+        });
+
+        // If there are lists within the results, make them sortable too
+        document.querySelectorAll('.draggable-list').forEach(function(list) {
+            new Sortable(list, {
+                animation: 150
+            });
+        });
+    </script>
+</body>
+</html>
