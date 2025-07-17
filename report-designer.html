@@ -13,132 +13,342 @@
     <!-- jQuery UI para drag and drop -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #f50057;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+            --border-color: #ddd;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: var(--light-color);
+            color: var(--dark-color);
         }
+        
         .container {
             display: flex;
             height: 100vh;
         }
+        
         .sidebar {
             width: 300px;
             background-color: #fff;
-            border-right: 1px solid #ddd;
+            border-right: 1px solid var(--border-color);
             padding: 20px;
             overflow-y: auto;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 5px var(--shadow-color);
+            z-index: 10;
         }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .search-box input {
+            padding-right: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.25);
+            border-color: var(--primary-color);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .highlight {
+            background-color: #fff9c4;
+            border-left: 3px solid var(--warning-color);
+        }
+        
         .main-content {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
         }
+        
+        .description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
         .element-list {
             margin-bottom: 20px;
         }
+        
+        .element-category {
+            margin-bottom: 15px;
+        }
+        
+        .element-category-title {
+            font-weight: bold;
+            padding: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
         .element-item {
             padding: 10px;
             margin-bottom: 5px;
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             cursor: move;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
         }
+        
         .element-item:hover {
-            background-color: #e0e0e0;
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px var(--shadow-color);
         }
+        
+        .element-icon {
+            margin-right: 10px;
+            color: var(--primary-color);
+            width: 20px;
+            text-align: center;
+        }
+        
         .design-area {
             background-color: #fff;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-            min-height: 500px;
+            min-height: 600px;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px var(--shadow-color);
         }
+        
         .design-area .element-item {
             position: relative;
         }
-        .design-area .element-item .remove-btn {
+        
+        .design-area .element-item .element-actions {
             position: absolute;
             top: 5px;
             right: 5px;
-            background-color: #ff5252;
-            color: white;
-            border: none;
+            display: none;
+        }
+        
+        .design-area .element-item:hover .element-actions {
+            display: flex;
+        }
+        
+        .element-actions button {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             font-size: 12px;
             line-height: 1;
             cursor: pointer;
-            display: none;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
-        .design-area .element-item:hover .remove-btn {
-            display: block;
+        
+        .element-actions .edit-btn {
+            color: var(--primary-color);
         }
+        
+        .element-actions .edit-btn:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        
+        .element-actions .duplicate-btn {
+            color: var(--warning-color);
+        }
+        
+        .element-actions .duplicate-btn:hover {
+            background-color: var(--warning-color);
+            color: #fff;
+        }
+        
+        .element-actions .remove-btn {
+            color: var(--danger-color);
+        }
+        
+        .element-actions .remove-btn:hover {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+        
         .page-container {
             margin-bottom: 20px;
-            border: 1px dashed #aaa;
-            padding: 10px;
-            background-color: #f9f9f9;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px var(--shadow-color);
         }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
         .page-title {
             font-weight: bold;
-            margin-bottom: 10px;
-            padding: 5px;
-            background-color: #eee;
-            border-radius: 4px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
         }
+        
+        .page-title i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .page-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--dark-color);
+            margin-left: 10px;
+            transition: color 0.2s ease;
+        }
+        
+        .page-actions button:hover {
+            color: var(--primary-color);
+        }
+        
         .panel-container {
             margin-bottom: 15px;
-            border: 1px dashed #ccc;
-            padding: 10px;
-            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            background-color: #fafafa;
         }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
         .panel-title {
             font-weight: bold;
-            margin-bottom: 10px;
-            padding: 5px;
-            background-color: #e5e5e5;
-            border-radius: 4px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
         }
+        
+        .panel-title i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .panel-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--dark-color);
+            margin-left: 10px;
+            transition: color 0.2s ease;
+        }
+        
+        .panel-actions button:hover {
+            color: var(--primary-color);
+        }
+        
         .buttons {
             margin-top: 20px;
-            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
-        button {
+        
+        button.action-btn {
             padding: 10px 15px;
-            margin-left: 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
         }
+        
+        button.action-btn i {
+            margin-right: 8px;
+        }
+        
         .save-btn {
-            background-color: #4caf50;
+            background-color: var(--success-color);
             color: white;
         }
+        
         .save-btn:hover {
-            background-color: #45a049;
+            background-color: #43a047;
+            transform: translateY(-2px);
         }
+        
         .reset-btn {
-            background-color: #f44336;
+            background-color: var(--danger-color);
             color: white;
         }
+        
         .reset-btn:hover {
             background-color: #d32f2f;
+            transform: translateY(-2px);
         }
+        
         .preview-btn {
-            background-color: #2196f3;
+            background-color: var(--primary-color);
             color: white;
         }
+        
         .preview-btn:hover {
-            background-color: #0b7dda;
+            background-color: #303f9f;
+            transform: translateY(-2px);
         }
+        
+        .add-page-btn {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .add-page-btn:hover {
+            background-color: #f57c00;
+            transform: translateY(-2px);
+        }
+        
         .dropzone {
             min-height: 50px;
             border: 2px dashed #ccc;
@@ -146,58 +356,388 @@
             margin: 10px 0;
             padding: 10px;
             background-color: #fafafa;
+            transition: all 0.3s ease;
         }
+        
         .dropzone.active {
-            border-color: #2196f3;
-            background-color: #e3f2fd;
+            border-color: var(--primary-color);
+            background-color: #e8eaf6;
         }
+        
+        .dropzone.hover {
+            border-color: var(--secondary-color);
+            background-color: #f8bbd0;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(245, 0, 87, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 0, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 0, 87, 0); }
+        }
+        
+        body.dragging .dropzone:empty {
+            border-color: var(--primary-color);
+            background-color: rgba(63, 81, 181, 0.1);
+            min-height: 80px;
+        }
+        
         .sv-title {
             font-size: 1.5em;
             font-weight: bold;
             margin-bottom: 20px;
+            color: var(--primary-color);
+            text-align: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .element-placeholder {
+            border: 2px dashed var(--primary-color);
+            background-color: #e8eaf6;
+            height: 40px;
+            margin: 5px 0;
+            border-radius: 4px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Modal para editar propiedades */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: var(--dark-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.25);
+        }
+        
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .choices-container {
+            margin-top: 10px;
+        }
+        
+        .choice-item {
+            display: flex;
+            margin-bottom: 5px;
+            align-items: center;
+        }
+        
+        .choice-item input {
+            flex: 1;
+            margin-right: 5px;
+        }
+        
+        .add-choice-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .remove-choice-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--dark-color);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            color: white;
+            max-width: 300px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success-color);
+        }
+        
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+        
+        .notification.info {
+            background-color: var(--primary-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="sidebar">
-            <h2>Elementos</h2>
+            <h2><i class="fas fa-th-list"></i> Elementos</h2>
+            <div class="search-box">
+                <input type="text" id="searchElements" placeholder="Buscar elementos..." class="form-control">
+                <i class="fas fa-search search-icon"></i>
+            </div>
             <div class="element-list">
-                <h3>Tipos de Elementos</h3>
-                <div class="element-item" data-type="text">Campo de Texto</div>
-                <div class="element-item" data-type="comment">Área de Texto</div>
-                <div class="element-item" data-type="checkbox">Casilla de Verificación</div>
-                <div class="element-item" data-type="radiogroup">Grupo de Radio</div>
-                <div class="element-item" data-type="dropdown">Lista Desplegable</div>
-                <div class="element-item" data-type="panel">Panel</div>
+                <div class="element-category">
+                    <div class="element-category-title"><i class="fas fa-font"></i> Texto</div>
+                    <div class="element-item" data-type="text">
+                        <div class="element-icon"><i class="fas fa-font"></i></div>
+                        <div>Campo de Texto</div>
+                    </div>
+                    <div class="element-item" data-type="comment">
+                        <div class="element-icon"><i class="fas fa-paragraph"></i></div>
+                        <div>Área de Texto</div>
+                    </div>
+                </div>
+                
+                <div class="element-category">
+                    <div class="element-category-title"><i class="fas fa-check-square"></i> Selección</div>
+                    <div class="element-item" data-type="checkbox">
+                        <div class="element-icon"><i class="fas fa-check-square"></i></div>
+                        <div>Casilla de Verificación</div>
+                    </div>
+                    <div class="element-item" data-type="radiogroup">
+                        <div class="element-icon"><i class="fas fa-dot-circle"></i></div>
+                        <div>Grupo de Radio</div>
+                    </div>
+                    <div class="element-item" data-type="dropdown">
+                        <div class="element-icon"><i class="fas fa-caret-square-down"></i></div>
+                        <div>Lista Desplegable</div>
+                    </div>
+                </div>
+                
+                <div class="element-category">
+                    <div class="element-category-title"><i class="fas fa-layer-group"></i> Contenedores</div>
+                    <div class="element-item" data-type="panel">
+                        <div class="element-icon"><i class="fas fa-folder"></i></div>
+                        <div>Panel</div>
+                    </div>
+                </div>
             </div>
         </div>
+        
         <div class="main-content">
-            <h1>Diseñador de Reportes</h1>
+            <h1><i class="fas fa-edit"></i> Diseñador de Reportes</h1>
+            <p class="description">Arrastra y suelta elementos para diseñar tu reporte. Los cambios se guardan automáticamente en el navegador.</p>
             <div class="design-area" id="designArea">
                 <!-- Aquí se cargarán los elementos del cuestionario -->
             </div>
+            
             <div class="buttons">
-                <button class="preview-btn" id="previewBtn">Vista Previa</button>
-                <button class="reset-btn" id="resetBtn">Restablecer</button>
-                <button class="save-btn" id="saveBtn">Guardar Diseño</button>
+                <button class="action-btn add-page-btn" id="addPageBtn">
+                    <i class="fas fa-plus-circle"></i> Añadir Página
+                </button>
+                <button class="action-btn preview-btn" id="previewBtn">
+                    <i class="fas fa-eye"></i> Vista Previa
+                </button>
+                <button class="action-btn" id="loadBtn" style="background-color: #2196F3; color: white;">
+                    <i class="fas fa-upload"></i> Cargar Diseño
+                </button>
+                <button class="action-btn reset-btn" id="resetBtn">
+                    <i class="fas fa-undo"></i> Restablecer
+                </button>
+                <button class="action-btn save-btn" id="saveBtn">
+                    <i class="fas fa-save"></i> Guardar Diseño
+                </button>
+                <button class="action-btn" id="exportBtn" style="background-color: #673AB7; color: white;">
+                    <i class="fas fa-file-export"></i> Exportar JSON
+                </button>
+                <button class="action-btn" id="importBtn" style="background-color: #673AB7; color: white;">
+                    <i class="fas fa-file-import"></i> Importar JSON
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Modal para vista previa -->
-    <div id="previewModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-        <div style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 800px;">
-            <span style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;" id="closePreview">&times;</span>
-            <h2>Vista Previa del Reporte</h2>
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Vista Previa del Reporte</div>
+                <span class="close-modal" id="closePreview">&times;</span>
+            </div>
             <div id="surveyPreview"></div>
         </div>
     </div>
 
+    <!-- Modal para editar propiedades -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Editar Propiedades</div>
+                <span class="close-modal" id="closeEdit">&times;</span>
+            </div>
+            <div id="editForm">
+                <!-- Aquí se generará el formulario de edición dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn reset-btn" id="cancelEditBtn">Cancelar</button>
+                <button class="action-btn save-btn" id="saveEditBtn">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- Modal para importar JSON -->
+    <div id="jsonImportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Importar/Editar JSON</div>
+                <span class="close-modal" id="closeJsonImport">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p class="description">Edita el JSON directamente o pega uno nuevo:</p>
+                <textarea id="jsonContent" class="form-control" rows="15" style="font-family: monospace;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn reset-btn" id="cancelJsonImportBtn">Cancelar</button>
+                <button class="action-btn save-btn" id="saveJsonImportBtn">Aplicar Cambios</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Variable global para almacenar el diseño actual
+        // Variables globales
         let designJson = null;
         let originalJson = null;
+        let currentEditElement = null;
+        let currentEditPath = null;
 
         // Cargar el cuestionario desde el archivo JSON
         $(document).ready(function() {
@@ -208,12 +748,29 @@
                 try {
                     designJson = JSON.parse(storedDesign);
                     renderDesign(designJson);
+                    showNotification('Diseño cargado desde almacenamiento local', 'info');
                 } catch (e) {
                     console.error('Error al cargar el diseño guardado:', e);
                     loadOriginalQuestionnaire();
                 }
             } else {
-                loadOriginalQuestionnaire();
+                // Verificar si hay un parámetro en la URL para cargar un diseño específico
+                const urlParams = new URLSearchParams(window.location.search);
+                const designFile = urlParams.get('design');
+                
+                if (designFile) {
+                    // Cargar el diseño desde el archivo especificado
+                    $.getJSON(designFile, function(data) {
+                        designJson = data;
+                        renderDesign(designJson);
+                        showNotification('Diseño cargado desde archivo: ' + designFile, 'info');
+                    }).fail(function() {
+                        console.error('Error al cargar el diseño desde archivo:', designFile);
+                        loadOriginalQuestionnaire();
+                    });
+                } else {
+                    loadOriginalQuestionnaire();
+                }
             }
 
             // Configurar drag and drop para elementos nuevos
@@ -221,6 +778,12 @@
 
             // Configurar botones
             setupButtons();
+
+            // Configurar modales
+            setupModals();
+            
+            // Configurar búsqueda
+            setupSearch();
         });
 
         function loadOriginalQuestionnaire() {
@@ -228,9 +791,23 @@
                 originalJson = data;
                 designJson = JSON.parse(JSON.stringify(data)); // Copia profunda
                 renderDesign(designJson);
+                showNotification('Cuestionario original cargado', 'info');
             }).fail(function(jqxhr, textStatus, error) {
                 console.error('Error al cargar el cuestionario:', error);
-                alert('Error al cargar el cuestionario. Por favor, verifica que el archivo questionnaire.json existe.');
+                showNotification('Error al cargar el cuestionario. Verifica que el archivo questionnaire.json existe.', 'error');
+                
+                // Crear un cuestionario vacío
+                originalJson = {
+                    title: "Nuevo Cuestionario",
+                    pages: [
+                        {
+                            name: "page1",
+                            elements: []
+                        }
+                    ]
+                };
+                designJson = JSON.parse(JSON.stringify(originalJson));
+                renderDesign(designJson);
             });
         }
 
@@ -239,14 +816,57 @@
             designArea.empty();
 
             // Título del cuestionario
-            const titleElement = $('<div class="sv-title"></div>').text(json.title);
+            const titleElement = $('<div class="sv-title"></div>');
+            titleElement.text(json.title);
+            titleElement.append('<i class="fas fa-edit edit-title-btn" style="margin-left: 10px; cursor: pointer; font-size: 0.8em;"></i>');
             designArea.append(titleElement);
+
+            // Configurar edición del título
+            titleElement.find('.edit-title-btn').on('click', function() {
+                editTitle(json.title);
+            });
+            
+            // También permitir editar el título haciendo clic en el texto
+            titleElement.css('cursor', 'pointer');
+            titleElement.on('click', function(e) {
+                // Evitar que se active si se hizo clic en el icono de edición
+                if (!$(e.target).hasClass('edit-title-btn')) {
+                    editTitle(json.title);
+                }
+            });
 
             // Renderizar páginas
             json.pages.forEach((page, pageIndex) => {
                 const pageContainer = $('<div class="page-container" data-page-index="' + pageIndex + '"></div>');
-                const pageTitle = $('<div class="page-title"></div>').text('Página: ' + page.name);
-                pageContainer.append(pageTitle);
+                
+                // Encabezado de la página
+                const pageHeader = $('<div class="page-header"></div>');
+                const pageTitle = $('<div class="page-title"><i class="fas fa-file-alt"></i> Página: ' + page.name + '</div>');
+                const pageActions = $('<div class="page-actions"></div>');
+                
+                // Botones de acción para la página
+                const editPageBtn = $('<button class="tooltip"><i class="fas fa-edit"></i><span class="tooltiptext">Editar Página</span></button>');
+                const removePageBtn = $('<button class="tooltip"><i class="fas fa-trash-alt"></i><span class="tooltiptext">Eliminar Página</span></button>');
+                
+                pageActions.append(editPageBtn, removePageBtn);
+                pageHeader.append(pageTitle, pageActions);
+                pageContainer.append(pageHeader);
+
+                // Configurar eventos para los botones de la página
+                editPageBtn.on('click', function() {
+                    editPage(pageIndex);
+                });
+                
+                removePageBtn.on('click', function() {
+                    if (json.pages.length > 1 && confirm('¿Estás seguro de que deseas eliminar esta página?')) {
+                        json.pages.splice(pageIndex, 1);
+                        renderDesign(json);
+                        updateDesignJson();
+                        showNotification('Página eliminada', 'success');
+                    } else if (json.pages.length <= 1) {
+                        showNotification('No se puede eliminar la única página del cuestionario', 'error');
+                    }
+                });
 
                 // Dropzone para la página
                 const pageDropzone = $('<div class="dropzone" data-page-index="' + pageIndex + '"></div>');
@@ -258,8 +878,30 @@
                         if (element.type === 'panel') {
                             // Renderizar panel
                             const panelContainer = $('<div class="panel-container" data-page-index="' + pageIndex + '" data-element-index="' + elementIndex + '"></div>');
-                            const panelTitle = $('<div class="panel-title"></div>').text('Panel: ' + (element.title || element.name));
-                            panelContainer.append(panelTitle);
+                            
+                            // Encabezado del panel
+                            const panelHeader = $('<div class="panel-header"></div>');
+                            const panelTitle = $('<div class="panel-title"><i class="fas fa-folder"></i> ' + (element.title || element.name) + '</div>');
+                            const panelActions = $('<div class="panel-actions"></div>');
+                            
+                            // Botones de acción para el panel
+                            const editPanelBtn = $('<button class="tooltip"><i class="fas fa-edit"></i><span class="tooltiptext">Editar Panel</span></button>');
+                            const removePanelBtn = $('<button class="tooltip"><i class="fas fa-trash-alt"></i><span class="tooltiptext">Eliminar Panel</span></button>');
+                            
+                            panelActions.append(editPanelBtn, removePanelBtn);
+                            panelHeader.append(panelTitle, panelActions);
+                            panelContainer.append(panelHeader);
+
+                            // Configurar eventos para los botones del panel
+                            editPanelBtn.on('click', function() {
+                                editElement(pageIndex, elementIndex, null);
+                            });
+                            
+                            removePanelBtn.on('click', function() {
+                                if (confirm('¿Estás seguro de que deseas eliminar este panel?')) {
+                                    removeElement(pageIndex, null, elementIndex);
+                                }
+                            });
 
                             // Dropzone para el panel
                             const panelDropzone = $('<div class="dropzone" data-page-index="' + pageIndex + '" data-panel-index="' + elementIndex + '"></div>');
@@ -297,20 +939,51 @@
             }
             elementItem.attr('data-element-index', elementIndex);
 
+            // Icono según el tipo de elemento
+            let iconClass = 'fas fa-question';
+            if (element.type === 'text') iconClass = 'fas fa-font';
+            else if (element.type === 'comment') iconClass = 'fas fa-paragraph';
+            else if (element.type === 'checkbox') iconClass = 'fas fa-check-square';
+            else if (element.type === 'radiogroup') iconClass = 'fas fa-dot-circle';
+            else if (element.type === 'dropdown') iconClass = 'fas fa-caret-square-down';
+            else if (element.type === 'panel') iconClass = 'fas fa-folder';
+
             // Texto del elemento
             let elementText = element.title || element.name;
             if (element.type) {
                 elementText += ' (' + element.type + ')';
             }
-            elementItem.text(elementText);
 
-            // Botón para eliminar
-            const removeBtn = $('<button class="remove-btn">×</button>');
+            // Estructura del elemento
+            const elementIcon = $('<div class="element-icon"><i class="' + iconClass + '"></i></div>');
+            const elementContent = $('<div></div>').text(elementText);
+            const elementActions = $('<div class="element-actions"></div>');
+
+            // Botones de acción
+            const editBtn = $('<button class="edit-btn tooltip"><i class="fas fa-edit"></i><span class="tooltiptext">Editar</span></button>');
+            const duplicateBtn = $('<button class="duplicate-btn tooltip" style="color: var(--warning-color);"><i class="fas fa-copy"></i><span class="tooltiptext">Duplicar</span></button>');
+            const removeBtn = $('<button class="remove-btn tooltip"><i class="fas fa-trash-alt"></i><span class="tooltiptext">Eliminar</span></button>');
+
+            elementActions.append(editBtn, duplicateBtn, removeBtn);
+            elementItem.append(elementIcon, elementContent, elementActions);
+
+            // Configurar eventos para los botones
+            editBtn.on('click', function(e) {
+                e.stopPropagation();
+                editElement(pageIndex, elementIndex, panelIndex);
+            });
+            
+            duplicateBtn.on('click', function(e) {
+                e.stopPropagation();
+                duplicateElement(pageIndex, panelIndex, elementIndex);
+            });
+
             removeBtn.on('click', function(e) {
                 e.stopPropagation();
-                removeElement(pageIndex, panelIndex, elementIndex);
+                if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
+                    removeElement(pageIndex, panelIndex, elementIndex);
+                }
             });
-            elementItem.append(removeBtn);
 
             return elementItem;
         }
@@ -321,15 +994,28 @@
                 helper: 'clone',
                 connectToSortable: '.dropzone',
                 revert: 'invalid',
+                zIndex: 1000,
+                opacity: 0.7,
+                cursor: 'move',
                 start: function(event, ui) {
                     ui.helper.css('width', $(this).width());
+                    ui.helper.css('height', 'auto');
+                    // Añadir clase para indicar que se está arrastrando
+                    $('body').addClass('dragging');
+                    $('.dropzone').addClass('active');
+                },
+                stop: function(event, ui) {
+                    // Quitar clase cuando se termina de arrastrar
+                    $('body').removeClass('dragging');
+                    $('.dropzone').removeClass('active');
                 }
             });
 
             // Hacer que las zonas de soltar acepten elementos
             $('.dropzone').droppable({
                 accept: '.element-item',
-                hoverClass: 'active',
+                hoverClass: 'hover',
+                tolerance: 'pointer',
                 drop: function(event, ui) {
                     const pageIndex = $(this).data('page-index');
                     const panelIndex = $(this).data('panel-index');
@@ -341,17 +1027,38 @@
                     }
                 }
             });
+            
+            // Añadir efectos visuales cuando se arrastra sobre las zonas
+            $('.dropzone').on('dragover', function(event) {
+                $(this).addClass('hover');
+            }).on('dragleave', function(event) {
+                $(this).removeClass('hover');
+            });
         }
 
         function setupSortable() {
             $('.dropzone').sortable({
-                items: '.element-item',
+                items: '.element-item, .panel-container',
                 connectWith: '.dropzone',
-                placeholder: 'element-item-placeholder',
+                placeholder: 'element-placeholder',
                 forcePlaceholderSize: true,
+                tolerance: 'pointer',
+                cursor: 'move',
+                opacity: 0.7,
+                handle: '.element-icon, .panel-title',  // Permitir arrastrar desde el icono o título
+                start: function(event, ui) {
+                    // Añadir clase para indicar que se está arrastrando
+                    $('body').addClass('dragging');
+                    ui.placeholder.height(ui.item.height());
+                },
+                stop: function(event, ui) {
+                    // Quitar clase cuando se termina de arrastrar
+                    $('body').removeClass('dragging');
+                },
                 update: function(event, ui) {
                     // Actualizar el JSON después de reordenar
                     updateDesignJson();
+                    showNotification('Elementos reordenados', 'info');
                 }
             });
         }
@@ -393,6 +1100,8 @@
 
             // Volver a renderizar el diseño
             renderDesign(designJson);
+            updateDesignJson();
+            showNotification('Elemento añadido', 'success');
         }
 
         function removeElement(pageIndex, panelIndex, elementIndex) {
@@ -406,6 +1115,45 @@
 
             // Volver a renderizar el diseño
             renderDesign(designJson);
+            updateDesignJson();
+            showNotification('Elemento eliminado', 'success');
+        }
+        
+        function duplicateElement(pageIndex, panelIndex, elementIndex) {
+            let originalElement;
+            
+            if (panelIndex !== null) {
+                // Obtener elemento de un panel
+                originalElement = designJson.pages[pageIndex].elements[panelIndex].elements[elementIndex];
+            } else {
+                // Obtener elemento de una página
+                originalElement = designJson.pages[pageIndex].elements[elementIndex];
+            }
+            
+            // Crear una copia profunda del elemento
+            const duplicatedElement = JSON.parse(JSON.stringify(originalElement));
+            
+            // Generar un nuevo nombre único para el elemento duplicado
+            duplicatedElement.name = duplicatedElement.name + '_copy_' + new Date().getTime();
+            
+            // Si tiene título, modificarlo para indicar que es una copia
+            if (duplicatedElement.title) {
+                duplicatedElement.title = duplicatedElement.title + ' (Copia)';
+            }
+            
+            // Añadir el elemento duplicado al JSON
+            if (panelIndex !== null) {
+                // Añadir a un panel justo después del elemento original
+                designJson.pages[pageIndex].elements[panelIndex].elements.splice(elementIndex + 1, 0, duplicatedElement);
+            } else {
+                // Añadir a una página justo después del elemento original
+                designJson.pages[pageIndex].elements.splice(elementIndex + 1, 0, duplicatedElement);
+            }
+            
+            // Volver a renderizar el diseño
+            renderDesign(designJson);
+            updateDesignJson();
+            showNotification('Elemento duplicado', 'success');
         }
 
         function updateDesignJson() {
@@ -486,14 +1234,19 @@
         }
 
         function setupButtons() {
+            // Botón para añadir página
+            $('#addPageBtn').on('click', function() {
+                addNewPage();
+            });
+
             // Botón de vista previa
             $('#previewBtn').on('click', function() {
                 showPreview();
             });
-
-            // Botón para cerrar la vista previa
-            $('#closePreview').on('click', function() {
-                $('#previewModal').hide();
+            
+            // Botón para cargar diseño desde archivo
+            $('#loadBtn').on('click', function() {
+                loadDesignFromFile();
             });
 
             // Botón de restablecer
@@ -502,6 +1255,7 @@
                     designJson = JSON.parse(JSON.stringify(originalJson)); // Copia profunda
                     renderDesign(designJson);
                     localStorage.removeItem('designJson');
+                    showNotification('Diseño restablecido', 'info');
                 }
             });
 
@@ -509,6 +1263,403 @@
             $('#saveBtn').on('click', function() {
                 saveDesign();
             });
+            
+            // Botón para exportar JSON
+            $('#exportBtn').on('click', function() {
+                exportDesignJson();
+            });
+            
+            // Botón para importar JSON
+            $('#importBtn').on('click', function() {
+                $('#jsonImportModal').show();
+                $('#jsonContent').val(JSON.stringify(designJson, null, 2));
+            });
+        }
+
+        function setupModals() {
+            // Cerrar modal de vista previa
+            $('#closePreview').on('click', function() {
+                $('#previewModal').hide();
+            });
+
+            // Cerrar modal de edición
+            $('#closeEdit, #cancelEditBtn').on('click', function() {
+                $('#editModal').hide();
+            });
+
+            // Guardar cambios en el modal de edición
+            $('#saveEditBtn').on('click', function() {
+                saveElementChanges();
+            });
+            
+            // Cerrar modal de importación JSON
+            $('#closeJsonImport, #cancelJsonImportBtn').on('click', function() {
+                $('#jsonImportModal').hide();
+            });
+            
+            // Guardar cambios en el modal de importación JSON
+            $('#saveJsonImportBtn').on('click', function() {
+                try {
+                    const jsonContent = $('#jsonContent').val();
+                    const json = JSON.parse(jsonContent);
+                    
+                    // Verificar que el JSON tiene la estructura correcta
+                    if (json.pages && Array.isArray(json.pages)) {
+                        designJson = json;
+                        renderDesign(designJson);
+                        updateDesignJson();
+                        $('#jsonImportModal').hide();
+                        showNotification('JSON importado correctamente', 'success');
+                    } else {
+                        showNotification('El JSON no tiene la estructura correcta de un cuestionario', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error en el formato JSON: ' + error.message, 'error');
+                }
+            });
+
+            // Cerrar modales al hacer clic fuera de ellos
+            $(window).on('click', function(event) {
+                if ($(event.target).hasClass('modal')) {
+                    $('.modal').hide();
+                }
+            });
+        }
+        
+        function setupSearch() {
+            $('#searchElements').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase().trim();
+                
+                // Limpiar resaltados anteriores
+                $('.element-item').removeClass('highlight');
+                
+                if (searchTerm === '') {
+                    // Si no hay término de búsqueda, mostrar todos los elementos
+                    $('.element-item').show();
+                    $('.element-category').show();
+                    return;
+                }
+                
+                // Buscar en los elementos de la barra lateral
+                $('.sidebar .element-item').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        $(this).show();
+                        $(this).closest('.element-category').show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                
+                // Ocultar categorías sin elementos visibles
+                $('.element-category').each(function() {
+                    const visibleItems = $(this).find('.element-item:visible').length;
+                    if (visibleItems === 0) {
+                        $(this).hide();
+                    }
+                });
+                
+                // Buscar en los elementos del área de diseño
+                $('.design-area .element-item').each(function() {
+                    const text = $(this).text().toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        $(this).addClass('highlight');
+                        
+                        // Asegurar que el elemento es visible (expandir paneles si es necesario)
+                        const panel = $(this).closest('.panel-container');
+                        if (panel.length) {
+                            panel.find('.panel-content').show();
+                        }
+                        
+                        // Scroll al primer elemento encontrado
+                        if ($('.highlight').length === 1) {
+                            $('html, body').animate({
+                                scrollTop: $(this).offset().top - 100
+                            }, 500);
+                        }
+                    }
+                });
+            });
+            
+            // Limpiar búsqueda al presionar Escape
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    $('#searchElements').val('').trigger('input');
+                }
+            });
+        }
+
+        function addNewPage() {
+            const pageName = 'page' + (designJson.pages.length + 1);
+            const newPage = {
+                name: pageName,
+                elements: []
+            };
+
+            designJson.pages.push(newPage);
+            renderDesign(designJson);
+            updateDesignJson();
+            showNotification('Nueva página añadida', 'success');
+        }
+
+        function editTitle(currentTitle) {
+            // Crear un modal para editar el título en lugar de usar prompt
+            const editForm = $('#editForm');
+            editForm.empty();
+            
+            editForm.append(`
+                <div class="form-group">
+                    <label for="questionnaireTitle">Título del Cuestionario:</label>
+                    <input type="text" id="questionnaireTitle" class="form-control" value="${currentTitle || ''}">
+                </div>
+            `);
+            
+            // Cambiar el título del modal
+            $('#editModal .modal-title').text('Editar Título del Cuestionario');
+            
+            // Mostrar el modal
+            $('#editModal').show();
+            
+            // Enfocar el campo de texto
+            $('#questionnaireTitle').focus();
+            
+            // Configurar el botón de guardar
+            $('#saveEditBtn').off('click').on('click', function() {
+                const newTitle = $('#questionnaireTitle').val().trim();
+                if (newTitle !== '') {
+                    designJson.title = newTitle;
+                    $('#editModal').hide();
+                    renderDesign(designJson);
+                    updateDesignJson();
+                    showNotification('Título actualizado', 'success');
+                } else {
+                    showNotification('El título no puede estar vacío', 'error');
+                }
+            });
+            
+            // Permitir guardar con Enter
+            $('#questionnaireTitle').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    $('#saveEditBtn').click();
+                }
+            });
+        }
+
+        function editPage(pageIndex) {
+            const page = designJson.pages[pageIndex];
+            
+            // Crear un modal para editar el nombre de la página
+            const editForm = $('#editForm');
+            editForm.empty();
+            
+            editForm.append(`
+                <div class="form-group">
+                    <label for="pageName">Nombre de la Página:</label>
+                    <input type="text" id="pageName" class="form-control" value="${page.name || ''}">
+                </div>
+            `);
+            
+            // Cambiar el título del modal
+            $('#editModal .modal-title').text('Editar Nombre de Página');
+            
+            // Mostrar el modal
+            $('#editModal').show();
+            
+            // Enfocar el campo de texto
+            $('#pageName').focus();
+            
+            // Configurar el botón de guardar
+            $('#saveEditBtn').off('click').on('click', function() {
+                const newName = $('#pageName').val().trim();
+                if (newName !== '') {
+                    page.name = newName;
+                    $('#editModal').hide();
+                    renderDesign(designJson);
+                    updateDesignJson();
+                    showNotification('Página actualizada', 'success');
+                } else {
+                    showNotification('El nombre de la página no puede estar vacío', 'error');
+                }
+            });
+            
+            // Permitir guardar con Enter
+            $('#pageName').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    $('#saveEditBtn').click();
+                }
+            });
+        }
+
+        function editElement(pageIndex, elementIndex, panelIndex) {
+            // Obtener el elemento a editar
+            let element;
+            if (panelIndex !== null) {
+                element = designJson.pages[pageIndex].elements[panelIndex].elements[elementIndex];
+                currentEditPath = { pageIndex, panelIndex, elementIndex };
+            } else {
+                element = designJson.pages[pageIndex].elements[elementIndex];
+                currentEditPath = { pageIndex, elementIndex };
+            }
+
+            currentEditElement = JSON.parse(JSON.stringify(element)); // Copia profunda
+
+            // Generar el formulario de edición según el tipo de elemento
+            const editForm = $('#editForm');
+            editForm.empty();
+
+            // Campos comunes para todos los tipos
+            editForm.append(`
+                <div class="form-group">
+                    <label for="elementName">Nombre:</label>
+                    <input type="text" id="elementName" class="form-control" value="${element.name || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="elementTitle">Título:</label>
+                    <input type="text" id="elementTitle" class="form-control" value="${element.title || ''}">
+                </div>
+            `);
+
+            // Campos específicos según el tipo
+            if (element.type === 'text' || element.type === 'comment') {
+                editForm.append(`
+                    <div class="form-group">
+                        <label for="elementPlaceholder">Placeholder:</label>
+                        <input type="text" id="elementPlaceholder" class="form-control" value="${element.placeholder || ''}">
+                    </div>
+                `);
+
+                if (element.type === 'text') {
+                    const inputTypes = ['text', 'email', 'tel', 'number', 'date', 'time', 'url', 'password'];
+                    let inputTypeOptions = '';
+                    inputTypes.forEach(type => {
+                        const selected = element.inputType === type ? 'selected' : '';
+                        inputTypeOptions += `<option value="${type}" ${selected}>${type}</option>`;
+                    });
+
+                    editForm.append(`
+                        <div class="form-group">
+                            <label for="elementInputType">Tipo de Entrada:</label>
+                            <select id="elementInputType" class="form-control">
+                                ${inputTypeOptions}
+                            </select>
+                        </div>
+                    `);
+                }
+            } else if (element.type === 'checkbox' || element.type === 'radiogroup' || element.type === 'dropdown') {
+                // Opciones para elementos de selección
+                editForm.append(`
+                    <div class="form-group">
+                        <label>Opciones:</label>
+                        <div class="choices-container" id="choicesContainer"></div>
+                        <button type="button" class="add-choice-btn" id="addChoiceBtn">
+                            <i class="fas fa-plus"></i> Añadir Opción
+                        </button>
+                    </div>
+                `);
+
+                const choicesContainer = $('#choicesContainer');
+                if (element.choices && element.choices.length > 0) {
+                    element.choices.forEach((choice, index) => {
+                        addChoiceInput(choicesContainer, choice.text, choice.value);
+                    });
+                } else {
+                    addChoiceInput(choicesContainer, '', '');
+                }
+
+                // Evento para añadir nueva opción
+                $('#addChoiceBtn').on('click', function() {
+                    addChoiceInput(choicesContainer, '', '');
+                });
+            } else if (element.type === 'panel') {
+                // No se necesitan campos adicionales para paneles
+            }
+
+            // Mostrar el modal de edición
+            $('#editModal').show();
+        }
+
+        function addChoiceInput(container, text, value) {
+            const choiceIndex = container.children().length;
+            const choiceItem = $(`
+                <div class="choice-item">
+                    <input type="text" class="form-control choice-text" placeholder="Texto" value="${text || ''}">
+                    <input type="text" class="form-control choice-value" placeholder="Valor" value="${value || ''}">
+                    <button type="button" class="remove-choice-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `);
+
+            container.append(choiceItem);
+
+            // Evento para eliminar opción
+            choiceItem.find('.remove-choice-btn').on('click', function() {
+                if (container.children().length > 1) {
+                    choiceItem.remove();
+                } else {
+                    showNotification('Debe haber al menos una opción', 'error');
+                }
+            });
+        }
+
+        function saveElementChanges() {
+            if (!currentEditElement || !currentEditPath) return;
+
+            // Obtener valores del formulario
+            const name = $('#elementName').val().trim();
+            const title = $('#elementTitle').val().trim();
+
+            if (!name) {
+                showNotification('El nombre es obligatorio', 'error');
+                return;
+            }
+
+            // Actualizar propiedades comunes
+            currentEditElement.name = name;
+            currentEditElement.title = title;
+
+            // Actualizar propiedades específicas según el tipo
+            if (currentEditElement.type === 'text' || currentEditElement.type === 'comment') {
+                currentEditElement.placeholder = $('#elementPlaceholder').val();
+
+                if (currentEditElement.type === 'text') {
+                    currentEditElement.inputType = $('#elementInputType').val();
+                }
+            } else if (currentEditElement.type === 'checkbox' || currentEditElement.type === 'radiogroup' || currentEditElement.type === 'dropdown') {
+                // Actualizar opciones
+                const choices = [];
+                $('.choice-item').each(function() {
+                    const text = $(this).find('.choice-text').val().trim();
+                    const value = $(this).find('.choice-value').val().trim() || text;
+                    if (text) {
+                        choices.push({ text, value });
+                    }
+                });
+
+                if (choices.length === 0) {
+                    showNotification('Debe haber al menos una opción', 'error');
+                    return;
+                }
+
+                currentEditElement.choices = choices;
+            }
+
+            // Actualizar el elemento en el JSON
+            if (currentEditPath.panelIndex !== undefined) {
+                designJson.pages[currentEditPath.pageIndex].elements[currentEditPath.panelIndex].elements[currentEditPath.elementIndex] = currentEditElement;
+            } else {
+                designJson.pages[currentEditPath.pageIndex].elements[currentEditPath.elementIndex] = currentEditElement;
+            }
+
+            // Cerrar el modal y actualizar la vista
+            $('#editModal').hide();
+            renderDesign(designJson);
+            updateDesignJson();
+            showNotification('Elemento actualizado', 'success');
+
+            // Limpiar variables
+            currentEditElement = null;
+            currentEditPath = null;
         }
 
         function showPreview() {
@@ -534,18 +1685,164 @@
             // Actualizar el JSON basado en el estado actual
             updateDesignJson();
 
+            // Obtener el nombre del formulario para el nombre del archivo
+            const formName = designJson.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() || 'formulario';
+            const fileName = formName + '-design.json';
+
             // Crear un objeto Blob con el JSON
             const blob = new Blob([JSON.stringify(designJson, null, 4)], { type: 'application/json' });
             
             // Crear un enlace para descargar el archivo
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'nombreformulario-design.json';
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
 
-            alert('Diseño guardado correctamente como nombreformulario-design.json');
+            showNotification('Diseño guardado como ' + fileName, 'success');
+        }
+        
+        function exportDesignJson() {
+            // Actualizar el JSON basado en el estado actual
+            updateDesignJson();
+            
+            // Crear un objeto URL para el JSON formateado
+            const jsonStr = JSON.stringify(designJson, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Abrir una nueva ventana con el JSON formateado
+            const newWindow = window.open();
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Exportar JSON</title>
+                    <style>
+                        body {
+                            font-family: monospace;
+                            white-space: pre;
+                            background-color: #f5f5f5;
+                            padding: 20px;
+                            margin: 0;
+                        }
+                        .toolbar {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            background-color: #333;
+                            color: white;
+                            padding: 10px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            z-index: 100;
+                        }
+                        .toolbar button {
+                            background-color: #4CAF50;
+                            color: white;
+                            border: none;
+                            padding: 8px 16px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            margin-left: 10px;
+                        }
+                        .toolbar button:hover {
+                            background-color: #45a049;
+                        }
+                        pre {
+                            margin-top: 50px;
+                            overflow-x: auto;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="toolbar">
+                        <h3>JSON Exportado</h3>
+                        <div>
+                            <button id="copyBtn">Copiar al Portapapeles</button>
+                            <button id="downloadBtn">Descargar</button>
+                            <button id="closeBtn">Cerrar</button>
+                        </div>
+                    </div>
+                    <pre>${jsonStr.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                    <script>
+                        document.getElementById('copyBtn').addEventListener('click', function() {
+                            navigator.clipboard.writeText(${JSON.stringify(jsonStr)})
+                                .then(() => alert('JSON copiado al portapapeles'))
+                                .catch(err => alert('Error al copiar: ' + err));
+                        });
+                        
+                        document.getElementById('downloadBtn').addEventListener('click', function() {
+                            const a = document.createElement('a');
+                            a.href = '${url}';
+                            a.download = '${designJson.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() || 'formulario'}-design.json';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        });
+                        
+                        document.getElementById('closeBtn').addEventListener('click', function() {
+                            window.close();
+                        });
+                    </script>
+                </body>
+                </html>
+            `);
+            newWindow.document.close();
+        }
+        
+        function loadDesignFromFile() {
+            // Crear un input de tipo file oculto
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+            
+            // Manejar el evento de selección de archivo
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const loadedDesign = JSON.parse(e.target.result);
+                            // Verificar que el JSON tiene la estructura correcta
+                            if (loadedDesign.pages && Array.isArray(loadedDesign.pages)) {
+                                designJson = loadedDesign;
+                                renderDesign(designJson);
+                                updateDesignJson();
+                                showNotification('Diseño cargado desde archivo: ' + file.name, 'success');
+                            } else {
+                                showNotification('El archivo no contiene un diseño válido', 'error');
+                            }
+                        } catch (error) {
+                            console.error('Error al parsear el archivo JSON:', error);
+                            showNotification('Error al cargar el archivo. Asegúrate de que es un JSON válido.', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                document.body.removeChild(fileInput);
+            });
+            
+            // Simular clic en el input
+            fileInput.click();
+        }
+
+        function showNotification(message, type) {
+            const notification = $('#notification');
+            notification.text(message);
+            notification.removeClass('success error info');
+            notification.addClass(type);
+            notification.addClass('show');
+
+            setTimeout(function() {
+                notification.removeClass('show');
+            }, 3000);
         }
     </script>
 </body>
