@@ -853,6 +853,36 @@ class FormBuilder {
 
 
 
+    // Función para convertir fechas al formato correcto para inputs date
+    formatDateForInput(dateString, inputType) {
+        if (inputType !== 'date' || !dateString) return dateString;
+        
+        // Detectar diferentes formatos de fecha y convertir a YYYY-MM-DD
+        const dateFormats = [
+            /^(\d{2})\/(\d{2})\/(\d{4})$/, // DD/MM/YYYY
+            /^(\d{4})\/(\d{2})\/(\d{2})$/, // YYYY/MM/DD
+            /^(\d{4})-(\d{2})-(\d{2})$/    // YYYY-MM-DD (ya correcto)
+        ];
+        
+        // DD/MM/YYYY -> YYYY-MM-DD
+        if (dateFormats[0].test(dateString)) {
+            const [, day, month, year] = dateString.match(dateFormats[0]);
+            return `${year}-${month}-${day}`;
+        }
+        
+        // YYYY/MM/DD -> YYYY-MM-DD
+        if (dateFormats[1].test(dateString)) {
+            return dateString.replace(/\//g, '-');
+        }
+        
+        // Ya está en formato correcto
+        if (dateFormats[2].test(dateString)) {
+            return dateString;
+        }
+        
+        return dateString; // Si no coincide con ningún formato, devolver original
+    }
+
     loadValuesIntoForm() {
         if (!this.responseData) {
             return;
@@ -884,17 +914,35 @@ class FormBuilder {
                         value = 'N/A';
                     }
                     
+                    // Formatear fechas para inputs de tipo date
+                    if (input.type === 'date' && value !== 'N/A') {
+                        const originalValue = value;
+                        value = this.formatDateForInput(value, 'date');
+                        if (elementName === 'Fecha de Nacimiento') {
+                            console.log(`🔄 Fecha convertida: ${originalValue} -> ${value}`);
+                        }
+                    }
+                    
                     input.value = value;
                     loadedCount++;
+                    
+                    // Verificación especial para elementos problemáticos
+                    if (elementName === 'question7') {
+                        console.log(`✅ question7 mapeado correctamente: ${value} -> input.value: ${input.value}`);
+                    }
+                    if (elementName === 'Fecha de Nacimiento') {
+                        console.log(`✅ Fecha de Nacimiento mapeado: ${value} -> input.value: ${input.value}`);
+                        console.log(`Tipo de input: ${input.type}, Tag: ${input.tagName}`);
+                    }
                 }
             }
         });
         
         if (loadedCount === 0) {
-             this.updateStatus('No se pudieron cargar valores desde response.json', 'error');
-         } else {
-             this.updateStatus(`Se cargaron ${loadedCount} valores desde response.json`, 'success');
-         }
+            this.updateStatus('No se pudieron cargar valores desde response.json', 'error');
+        } else {
+            this.updateStatus(`Se cargaron ${loadedCount} valores desde response.json`, 'success');
+        }
     }
 
     // Método para obtener todos los elementos definidos en el layout
