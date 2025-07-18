@@ -1,0 +1,84 @@
+{
+  "elements": [],
+  "rows": [
+    {
+      "id": "row-1752818336958",
+      "elements": [
+        "panel1"
+      ]
+    },
+    {
+      "id": "row-1752818336958",
+      "elements": [
+        "Nombre del Centro Notificador"
+      ]
+    },
+    {
+      "id": "row-1752818336959",
+      "elements": [
+        "Fecha",
+        "CURP"
+      ]
+    },
+    {
+      "id": "row-1752818336961",
+      "elements": [
+        "name"
+      ]
+    },
+    {
+      "id": "row-1752818336961",
+      "elements": [
+        "question1"
+      ]
+    },
+    {
+      "id": "row-1752818336961",
+      "elements": [
+        "Fecha de Nacimiento"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "CURP"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "question2"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "question3"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "question4"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "question5"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "question6"
+      ]
+    },
+    {
+      "id": "row-1752818336962",
+      "elements": [
+        "question7"
+      ]
+    }
+  ]
+}
