@@ -917,29 +917,16 @@ class FormBuilder {
                     if (!input) input = element.querySelector('select');
                     
                     if (input) {
-                        let finalValue = value;
-                        
-                        // Formatear fechas para inputs de tipo date
-                        if (input.type === 'date' && finalValue !== 'N/A') {
-                            const originalValue = finalValue;
-                            finalValue = this.formatDateForInput(finalValue, 'date');
-                            if (elementName === 'Fecha de Nacimiento' && index === 0) {
-                                console.log(`🔄 Fecha convertida: ${originalValue} -> ${finalValue}`);
-                            }
-                        }
-                        
-                        input.value = finalValue;
-                        loadedCount++;
-                        
-                        // Verificación especial para elementos problemáticos (solo mostrar para el primer elemento)
-                        if (elementName === 'question7' && index === 0) {
-                            console.log(`✅ question7 mapeado correctamente: ${finalValue} -> ${elements.length} elemento(s) encontrado(s)`);
-                        }
-                        if (elementName === 'Fecha de Nacimiento' && index === 0) {
-                            console.log(`✅ Fecha de Nacimiento mapeado: ${finalValue} -> ${elements.length} elemento(s) encontrado(s)`);
-                            console.log(`Tipo de input: ${input.type}, Tag: ${input.tagName}`);
-                        }
-                    }
+                         let finalValue = value;
+                         
+                         // Formatear fechas para inputs de tipo date
+                         if (input.type === 'date' && finalValue !== 'N/A') {
+                             finalValue = this.formatDateForInput(finalValue, 'date');
+                         }
+                         
+                         input.value = finalValue;
+                         loadedCount++;
+                     }
                 });
             }
         });
