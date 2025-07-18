@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Formulario</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset y Variables CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #17a2b8;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --border-color: #bdc3c7;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-element {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            flex: 1;
+            min-width: 250px;
+            transition: var(--transition);
+        }
+
+        .form-element:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .form-element.has-data {
+            border-left: 4px solid var(--success-color);
+            background: linear-gradient(to right, rgba(39, 174, 96, 0.05), transparent);
+        }
+
+        .element-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .element-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+        }
+
+        .element-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .panel-content {
+            background: var(--light-color);
+            padding: 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary-color);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-element {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="formTitle"><i class="fas fa-file-alt"></i> Cargando...</h1>
+            <p>Visualización de formulario con datos cargados</p>
+        </div>
+        
+        <div class="form-content">
+            <div id="loadingMessage" class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Cargando formulario y datos...</p>
+            </div>
+            
+            <div id="errorMessage" class="error" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="errorText"></span>
+            </div>
+            
+
+            
+            <div id="formContainer" style="display: none;">
+                <!-- El formulario se cargará aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class FormDisplay {
+            constructor() {
+                this.questionnaire = null;
+                this.customLayout = null;
+                this.responseData = null;
+                this.startTime = Date.now();
+                
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.loadData();
+                    this.renderForm();
+                    this.loadValues();
+                    this.hideLoading();
+                } catch (error) {
+                    console.error('Error al inicializar:', error);
+                    this.showError('Error al cargar los datos del formulario');
+                }
+            }
+
+            async loadData() {
+                try {
+                    // Cargar questionnaire.json
+                    const questionnaireResponse = await fetch('questionnaire.json');
+                    if (!questionnaireResponse.ok) {
+                        throw new Error('No se pudo cargar questionnaire.json');
+                    }
+                    this.questionnaire = await questionnaireResponse.json();
+                    
+                    // Cargar custom-layout.json (opcional)
+                    try {
+                        const layoutResponse = await fetch('custom-layout.json');
+                        if (layoutResponse.ok) {
+                            this.customLayout = await layoutResponse.json();
+                        }
+                    } catch (e) {
+                        console.log('No se encontró custom-layout.json, usando diseño por defecto');
+                    }
+                    
+                    // Cargar response.json (opcional)
+                    try {
+                        const responseResponse = await fetch('response.json');
+                        if (responseResponse.ok) {
+                            this.responseData = await responseResponse.json();
+                        }
+                    } catch (e) {
+                        console.log('No se encontró response.json');
+                    }
+                    
+                    // Actualizar título
+                    document.getElementById('formTitle').innerHTML = 
+                        `<i class="fas fa-file-alt"></i> ${this.questionnaire.title || 'Formulario'}`;
+                        
+                } catch (error) {
+                    throw new Error(`Error al cargar datos: ${error.message}`);
+                }
+            }
+
+            renderForm() {
+                const container = document.getElementById('formContainer');
+                container.innerHTML = '';
+
+                if (this.customLayout && this.customLayout.rows) {
+                    // Usar diseño personalizado
+                    this.renderCustomLayout(container);
+                } else {
+                    // Usar diseño por defecto basado en páginas
+                    this.renderDefaultLayout(container);
+                }
+            }
+
+            renderCustomLayout(container) {
+                this.customLayout.rows.forEach(row => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'form-row';
+                    
+                    row.elements.forEach(elementName => {
+                        const elementData = this.findElementByName(elementName);
+                        if (elementData) {
+                            const elementDiv = this.createFormElement(elementData);
+                            rowDiv.appendChild(elementDiv);
+                        }
+                    });
+                    
+                    if (rowDiv.children.length > 0) {
+                        container.appendChild(rowDiv);
+                    }
+                });
+            }
+
+            renderDefaultLayout(container) {
+                if (!this.questionnaire.pages) return;
+
+                this.questionnaire.pages.forEach((page, pageIndex) => {
+                    if (page.elements && page.elements.length > 0) {
+                        const sectionDiv = document.createElement('div');
+                        sectionDiv.className = 'form-section';
+                        
+                        if (this.questionnaire.pages.length > 1) {
+                            const titleDiv = document.createElement('div');
+                            titleDiv.className = 'section-title';
+                            titleDiv.innerHTML = `<i class="fas fa-folder"></i> ${page.name || `Página ${pageIndex + 1}`}`;
+                            sectionDiv.appendChild(titleDiv);
+                        }
+                        
+                        this.renderElements(page.elements, sectionDiv);
+                        container.appendChild(sectionDiv);
+                    }
+                });
+            }
+
+            renderElements(elements, container) {
+                elements.forEach(element => {
+                    if (element.type === 'panel' && element.elements) {
+                        // Renderizar panel con sus elementos
+                        const panelSection = document.createElement('div');
+                        panelSection.className = 'form-section';
+                        
+                        const panelTitle = document.createElement('div');
+                        panelTitle.className = 'section-title';
+                        panelTitle.innerHTML = `<i class="fas fa-layer-group"></i> ${element.title || element.name}`;
+                        panelSection.appendChild(panelTitle);
+                        
+                        this.renderElements(element.elements, panelSection);
+                        container.appendChild(panelSection);
+                    } else {
+                        // Renderizar elemento individual
+                        const rowDiv = document.createElement('div');
+                        rowDiv.className = 'form-row';
+                        
+                        const elementDiv = this.createFormElement(element);
+                        rowDiv.appendChild(elementDiv);
+                        container.appendChild(rowDiv);
+                    }
+                });
+            }
+
+            createFormElement(elementData) {
+                const div = document.createElement('div');
+                div.className = 'form-element';
+                div.dataset.elementName = elementData.name;
+                div.dataset.elementType = elementData.type;
+                
+                const icon = this.getElementIcon(elementData.type);
+                const title = elementData.title || elementData.name || elementData.placeholder || 'Sin título';
+                
+                let inputHtml = '';
+                switch (elementData.type) {
+                    case 'text':
+                        const inputType = elementData.inputType || 'text';
+                        inputHtml = `<input type="${inputType}" class="element-input" placeholder="${elementData.placeholder || ''}" readonly>`;
+                        break;
+                    case 'comment':
+                        inputHtml = `<textarea class="element-input element-textarea" placeholder="${elementData.placeholder || ''}" readonly></textarea>`;
+                        break;
+                    case 'panel':
+                        inputHtml = `<div class="panel-content">Panel: ${title}</div>`;
+                        break;
+                    default:
+                        inputHtml = `<input type="text" class="element-input" placeholder="${elementData.placeholder || ''}" readonly>`;
+                }
+                
+                div.innerHTML = `
+                    <div class="element-label">
+                        <i class="fas ${icon}"></i>
+                        ${title}
+                    </div>
+                    ${inputHtml}
+                `;
+                
+                return div;
+            }
+
+            findElementByName(name) {
+                if (!this.questionnaire.pages) return null;
+                
+                for (const page of this.questionnaire.pages) {
+                    const found = this.findElementInArray(page.elements, name);
+                    if (found) return found;
+                }
+                return null;
+            }
+
+            findElementInArray(elements, name) {
+                for (const element of elements) {
+                    if (element.name === name) return element;
+                    if (element.elements) {
+                        const found = this.findElementInArray(element.elements, name);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+
+            getElementIcon(type) {
+                const icons = {
+                    'text': 'fa-font',
+                    'comment': 'fa-comment-alt',
+                    'panel': 'fa-layer-group',
+                    'dropdown': 'fa-chevron-down',
+                    'radiogroup': 'fa-dot-circle',
+                    'checkbox': 'fa-check-square',
+                    'rating': 'fa-star',
+                    'matrix': 'fa-table',
+                    'html': 'fa-code',
+                    'image': 'fa-image'
+                };
+                return icons[type] || 'fa-square';
+            }
+
+            loadValues() {
+                if (!this.responseData) return;
+
+                const elements = document.querySelectorAll('.form-element[data-element-name]');
+                let loadedCount = 0;
+
+                elements.forEach(element => {
+                    const elementName = element.dataset.elementName;
+                    let value = this.responseData[elementName];
+
+                    if (value !== undefined && value !== null && value !== '') {
+                        const input = element.querySelector('.element-input');
+                        if (input) {
+                            // Formatear fechas para inputs de tipo date
+                            if (input.type === 'date') {
+                                value = this.formatDateForInput(value);
+                            }
+                            
+                            input.value = value;
+                            element.classList.add('has-data');
+                            loadedCount++;
+                        }
+                    }
+                });
+
+                return loadedCount;
+            }
+
+            formatDateForInput(dateString) {
+                if (!dateString) return dateString;
+                
+                // Detectar diferentes formatos de fecha y convertir a YYYY-MM-DD
+                const dateFormats = [
+                    /^(\d{2})\/(\d{2})\/(\d{4})$/, // DD/MM/YYYY
+                    /^(\d{4})\/(\d{2})\/(\d{2})$/, // YYYY/MM/DD
+                    /^(\d{4})-(\d{2})-(\d{2})$/    // YYYY-MM-DD (ya correcto)
+                ];
+                
+                // DD/MM/YYYY -> YYYY-MM-DD
+                if (dateFormats[0].test(dateString)) {
+                    const [, day, month, year] = dateString.match(dateFormats[0]);
+                    return `${year}-${month}-${day}`;
+                }
+                
+                // YYYY/MM/DD -> YYYY-MM-DD
+                if (dateFormats[1].test(dateString)) {
+                    return dateString.replace(/\//g, '-');
+                }
+                
+                return dateString;
+            }
+
+
+
+            hideLoading() {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('formContainer').style.display = 'block';
+            }
+
+            showError(message) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('errorText').textContent = message;
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            new FormDisplay();
+        });
+    </script>
+</body>
+</html>
