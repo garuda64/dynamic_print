@@ -301,6 +301,21 @@ body {
     box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
 }
 
+.form-element.has-data {
+    border-left: 4px solid var(--success-color);
+    background: linear-gradient(to right, rgba(39, 174, 96, 0.05), transparent);
+}
+
+.form-element.has-data .element-label {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.form-element.has-data .element-input {
+    background-color: rgba(39, 174, 96, 0.05);
+    border-color: var(--success-color);
+}
+
 .form-element.dragging {
     opacity: 0.5;
     transform: rotate(5deg);

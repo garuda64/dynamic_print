@@ -1,31 +1,67 @@
 Prompt: genera una aplicacion que recibe los valores de questionnaire.json y con base a ellos renderiza en el html todos los elementos. esta aplicacion debe tener su propio archivo json donde quede el diseño personalizado de todos los elemento en el html, de forma que si mas adelante se recarga la pagina html, se consulta primero si existe el json con el diseño personalizado y se renderiza, en caso de no existir, se renderiza a partir del archivo questionnaire.json. esta aplicacion debe permitir realizar drag and drop. agrupar varios elementos en una misma fila o un elemento en una sola fila, cuando el elemento en el json personlizado esta visible, mostrar o ocultar el elemento del html. tener un boton de guardar donde se genera el json con el diseño personalizado. boton para exportar el json del diseño personalizado o para importalo
 
 
-# Editor de Formularios Dinámicos
+# Editor de Formularios Dinámicos v2
 
-Una aplicación web que permite crear y personalizar formularios de manera visual mediante drag and drop, basada en archivos JSON de configuración.
+## Descripción
+Editor visual de formularios dinámicos que permite crear, editar y visualizar formularios basados en archivos JSON. Ahora incluye funcionalidad para cargar automáticamente datos de respuesta desde un archivo JSON.
 
-## Características
+## Características Principales
 
-- **Renderizado dinámico**: Lee elementos desde `questionnaire.json` y los renderiza en HTML
-- **Diseño personalizado**: Guarda configuraciones personalizadas en `custom-layout.json`
-- **Drag and Drop**: Arrastra elementos para reorganizar el formulario
-- **Agrupación flexible**: Agrupa varios elementos en una fila o mantén elementos individuales
-- **Visibilidad**: Muestra/oculta elementos dinámicamente
-- **Persistencia**: Guarda, exporta e importa diseños personalizados
-- **Modo dual**: Alterna entre modo edición y modo vista
+### ✨ Nuevas Funcionalidades
+- **Carga Automática de Datos**: Los valores del archivo `response.json` se asignan automáticamente a los elementos correspondientes del formulario
+- **Indicadores Visuales**: Los elementos que tienen datos cargados se muestran con un borde verde y fondo destacado
+- **Botón de Recarga**: Permite recargar manualmente los datos desde `response.json`
 
-## Estructura de Archivos
+### 🎯 Funcionalidades Existentes
+- Drag & Drop para organizar elementos del formulario
+- Editor visual con vista previa en tiempo real
+- Modo edición/vista para alternar entre diseño y visualización
+- Guardado y carga de diseños personalizados
+- Importación/exportación de configuraciones
+- Panel de propiedades para personalizar elementos
+- Grilla visual opcional para alineación precisa
 
+## Archivos Principales
+
+- `index.html` - Interfaz principal del editor
+- `app.js` - Lógica principal de la aplicación
+- `styles.css` - Estilos CSS
+- `questionnaire.json` - Definición de elementos del formulario
+- `custom-layout.json` - Configuración del diseño personalizado
+- `response.json` - **NUEVO**: Datos de respuesta que se cargan automáticamente
+- `server.js` - Servidor HTTP simple para desarrollo
+
+## Cómo Usar la Carga Automática de Datos
+
+### 1. Formato del archivo response.json
+El archivo debe contener un objeto JSON donde las claves corresponden a los nombres de los elementos del formulario:
+
+```json
+{
+    "Nombre del Centro Notificador": "Hospital General",
+    "Fecha": "2025-05-28",
+    "name": "Centro Médico ABC",
+    "question1": "Juan Pérez García",
+    "CURP": "PEGJ850315HDFRRN09",
+    "question2": "Agencia Central",
+    "question3": "Accidente de tránsito",
+    "question4": "Fractura en brazo derecho",
+    "question6": "Dr. María González",
+    "question7": 12345678
+}
 ```
-├── index.html          # Página principal
-├── app.js             # Lógica de la aplicación
-├── styles.css         # Estilos CSS
-├── server.js          # Servidor local (Node.js)
-├── questionnaire.json # Configuración base del formulario
-├── custom-layout.json # Diseño personalizado (generado)
-└── README.md          # Este archivo
-```
+
+### 2. Carga Automática
+- Los datos se cargan automáticamente al inicializar la aplicación
+- Los elementos que reciben datos se marcan visualmente con:
+  - Borde izquierdo verde
+  - Fondo ligeramente verde
+  - Etiqueta en color verde
+
+### 3. Recarga Manual
+- Usa el botón "Cargar Datos" en la barra superior para recargar los datos
+- Útil cuando se modifica el archivo `response.json`
 
 ## Instalación y Uso
 

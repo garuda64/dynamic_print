@@ -14,9 +14,16 @@ class FormBuilder {
         try {
             await this.loadQuestionnaire();
             await this.loadCustomLayout();
+            await this.loadResponseData();
             this.setupEventListeners();
             this.renderElements();
             this.renderCanvas();
+            
+            // Esperar a que el canvas se renderice completamente antes de cargar valores
+            setTimeout(() => {
+                this.loadValuesIntoFormWhenReady();
+            }, 1000);
+            
             this.updateStatus('Aplicación cargada correctamente');
         } catch (error) {
             console.error('Error al inicializar la aplicación:', error);
@@ -48,6 +55,20 @@ class FormBuilder {
         }
     }
 
+    async loadResponseData() {
+        try {
+            const response = await fetch('response.json');
+            if (response.ok) {
+                this.responseData = await response.json();
+                this.updateStatus('Datos de respuesta cargados');
+                console.log('Datos de respuesta cargados:', this.responseData);
+            }
+        } catch (error) {
+            console.log('No se encontró archivo de respuestas');
+            this.responseData = null;
+        }
+    }
+
     setupEventListeners() {
         // Controles del header
         document.getElementById('toggleMode').addEventListener('click', () => this.toggleMode());
@@ -56,6 +77,7 @@ class FormBuilder {
         document.getElementById('importBtn').addEventListener('click', () => this.importLayout());
         document.getElementById('importLayout').addEventListener('change', (e) => this.handleImport(e));
         document.getElementById('resetLayout').addEventListener('click', () => this.resetLayout());
+        document.getElementById('loadResponseData').addEventListener('click', () => this.reloadResponseData());
         
         // Controles del canvas
         document.getElementById('addRow').addEventListener('click', () => this.addRow());
@@ -316,16 +338,16 @@ class FormBuilder {
         switch (elementData.type) {
             case 'text':
                 const inputType = elementData.inputType || 'text';
-                inputHtml = `<input type="${inputType}" class="element-input" placeholder="${elementData.placeholder || ''}" ${this.isEditMode ? 'disabled' : ''}>`;
+                inputHtml = `<input type="${inputType}" class="element-input" placeholder="${elementData.placeholder || ''}" ${this.isEditMode ? 'readonly' : ''}>`;
                 break;
             case 'comment':
-                inputHtml = `<textarea class="element-input element-textarea" placeholder="${elementData.placeholder || ''}" ${this.isEditMode ? 'disabled' : ''}></textarea>`;
+                inputHtml = `<textarea class="element-input element-textarea" placeholder="${elementData.placeholder || ''}" ${this.isEditMode ? 'readonly' : ''}></textarea>`;
                 break;
             case 'panel':
                 inputHtml = `<div class="panel-content">Panel: ${title}</div>`;
                 break;
             default:
-                inputHtml = `<input type="text" class="element-input" placeholder="${elementData.placeholder || ''}" ${this.isEditMode ? 'disabled' : ''}>`;
+                inputHtml = `<input type="text" class="element-input" placeholder="${elementData.placeholder || ''}" ${this.isEditMode ? 'readonly' : ''}>`;
         }
         
         div.innerHTML = `
@@ -719,10 +741,18 @@ class FormBuilder {
         
         if (this.isEditMode) {
             button.innerHTML = '<i class="fas fa-eye"></i> Modo Vista';
-            inputs.forEach(input => input.disabled = true);
+            inputs.forEach(input => {
+                if (input.tagName.toLowerCase() !== 'div') {
+                    input.readOnly = true;
+                }
+            });
         } else {
             button.innerHTML = '<i class="fas fa-edit"></i> Modo Edición';
-            inputs.forEach(input => input.disabled = false);
+            inputs.forEach(input => {
+                if (input.tagName.toLowerCase() !== 'div') {
+                    input.readOnly = false;
+                }
+            });
         }
         
         this.updateStatus(`Cambiado a modo ${this.isEditMode ? 'edición' : 'vista'}`);
@@ -802,6 +832,168 @@ class FormBuilder {
     updateElementCount() {
         const count = document.querySelectorAll('.form-element').length;
         document.getElementById('elementCount').textContent = `${count} elementos`;
+    }
+
+    // Método para verificar si el canvas está listo
+    isCanvasReady() {
+        const elementsInCanvas = document.querySelectorAll('.form-element[data-element-name]').length;
+        console.log(`Elementos del formulario en canvas: ${elementsInCanvas}`);
+        return elementsInCanvas > 0;
+    }
+
+    // Método mejorado para cargar valores con verificación de canvas
+    loadValuesIntoFormWhenReady() {
+        if (this.isCanvasReady()) {
+            this.loadValuesIntoForm();
+        } else {
+            console.log('Canvas no está listo, esperando...');
+            setTimeout(() => {
+                this.loadValuesIntoFormWhenReady();
+            }, 500);
+        }
+    }
+
+    // Método de debugging para inspeccionar elementos específicos
+    debugElement(elementName) {
+        const element = document.querySelector(`.form-element[data-element-name="${elementName}"]`);
+        if (element) {
+            console.log(`=== DEBUG ELEMENTO: ${elementName} ===`);
+            console.log('Tipo:', element.getAttribute('data-element-type'));
+            console.log('HTML completo:', element.outerHTML);
+            console.log('Inputs encontrados:', element.querySelectorAll('input, textarea, select').length);
+            console.log('Elementos con clase .element-input:', element.querySelectorAll('.element-input').length);
+            
+            // Mostrar detalles de cada input encontrado
+            const inputs = element.querySelectorAll('input, textarea, select');
+            inputs.forEach((input, index) => {
+                console.log(`Input ${index + 1}:`, {
+                    tag: input.tagName,
+                    type: input.type,
+                    class: input.className,
+                    value: input.value
+                });
+            });
+            
+            console.log('=== FIN DEBUG ===');
+        } else {
+            console.log(`=== DEBUG: Elemento ${elementName} no encontrado ===`);
+        }
+    }
+
+    loadValuesIntoForm() {
+        if (!this.responseData) {
+            console.log('No hay datos de respuesta para cargar');
+            return;
+        }
+
+        console.log('Cargando valores en el formulario...');
+        console.log('Datos de respuesta:', this.responseData);
+        
+        // Esperar un poco más para asegurar que el DOM esté completamente renderizado
+        setTimeout(() => {
+            let valuesLoaded = 0;
+            let elementsFound = 0;
+            let elementsInDOM = document.querySelectorAll('.form-element[data-element-name]').length;
+            
+            console.log(`Elementos en el DOM: ${elementsInDOM}`);
+            
+            Object.keys(this.responseData).forEach(fieldName => {
+                const value = this.responseData[fieldName];
+                console.log(`Buscando elemento: ${fieldName}`);
+                
+                // Buscar específicamente elementos del formulario, no iconos de visibilidad
+                const formElement = document.querySelector(`.form-element[data-element-name="${fieldName}"]`);
+                
+                if (formElement) {
+                    elementsFound++;
+                    console.log(`Elemento encontrado: ${fieldName}, tipo: ${formElement.dataset.elementType}`);
+                    
+                    const elementType = formElement.dataset.elementType;
+                    
+                    // Buscar el input según el tipo de elemento
+                    if (elementType === 'panel') {
+                        // Los paneles no tienen inputs, solo contenido
+                        console.log(`Elemento ${fieldName} es un panel, saltando...`);
+                        return;
+                    }
+                    
+                    // Debugging detallado para el primer elemento que no funciona
+                    if (valuesLoaded === 0) {
+                        this.debugElement(fieldName);
+                    }
+                    
+                    // Intentar múltiples selectores para encontrar el input
+                    let input = formElement.querySelector('.element-input') ||
+                               formElement.querySelector('input') ||
+                               formElement.querySelector('textarea') ||
+                               formElement.querySelector('select');
+                    
+                    if (input) {
+                        // Asignar el valor según el tipo de input
+                        if (input.tagName.toLowerCase() === 'textarea') {
+                            input.value = value;
+                        } else if (input.type === 'date') {
+                            // Formatear fecha si es necesario
+                            input.value = value;
+                        } else if (input.type === 'number') {
+                            input.value = value;
+                        } else {
+                            input.value = value;
+                        }
+                        
+                        valuesLoaded++;
+                        console.log(`Valor cargado para ${fieldName}: ${value}`);
+                        
+                        // Agregar una clase visual para indicar que el campo tiene datos
+                        formElement.classList.add('has-data');
+                    } else {
+                        console.log(`No se encontró input para el elemento: ${fieldName} (tipo: ${elementType})`);
+                        // Mostrar la estructura del elemento para debugging
+                        console.log('Estructura del elemento:', formElement.innerHTML);
+                        
+                        // Debugging adicional
+                        console.log('Todos los elementos input/textarea/select en el elemento:');
+                        const allInputs = formElement.querySelectorAll('input, textarea, select');
+                        allInputs.forEach((inp, idx) => {
+                            console.log(`  ${idx}: ${inp.tagName} class="${inp.className}" type="${inp.type}"`);
+                        });
+                    }
+                } else {
+                    console.log(`No se encontró elemento para el campo: ${fieldName}`);
+                }
+            });
+            
+            console.log(`Elementos encontrados: ${elementsFound}, Valores cargados: ${valuesLoaded}`);
+            
+            if (valuesLoaded > 0) {
+                this.updateStatus(`${valuesLoaded} valores cargados desde response.json`, 'success');
+            } else if (elementsInDOM === 0) {
+                this.updateStatus('Esperando que se rendericen los elementos...', 'info');
+                // Intentar de nuevo después de un poco más de tiempo
+                setTimeout(() => this.loadValuesIntoForm(), 1000);
+            } else {
+                this.updateStatus('No se pudieron cargar valores desde response.json', 'warning');
+                console.log('Elementos disponibles en el DOM:');
+                document.querySelectorAll('.form-element[data-element-name]').forEach(el => {
+                    console.log(`- ${el.dataset.elementName} (tipo: ${el.dataset.elementType})`);
+                });
+            }
+        }, 1000); // Aumentar el tiempo de espera
+    }
+
+    // Método para recargar valores manualmente
+    reloadResponseData() {
+        this.updateStatus('Recargando datos de respuesta...', 'info');
+        this.loadResponseData().then(() => {
+            if (this.responseData) {
+                this.loadValuesIntoFormWhenReady();
+            } else {
+                this.updateStatus('No se pudo cargar el archivo response.json', 'error');
+            }
+        }).catch(error => {
+            console.error('Error al recargar datos:', error);
+            this.updateStatus('Error al recargar datos de respuesta', 'error');
+        });
     }
 }
 
