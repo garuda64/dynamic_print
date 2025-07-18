@@ -897,44 +897,50 @@ class FormBuilder {
         
         // Procesar cada elemento del layout
         layoutElements.forEach(elementName => {
-            const element = document.querySelector(`.form-element[data-element-name="${elementName}"]`);
-            if (element) {
-                // Intentar múltiples selectores para encontrar el input
-                let input = element.querySelector('.element-input');
-                if (!input) input = element.querySelector('input');
-                if (!input) input = element.querySelector('textarea');
-                if (!input) input = element.querySelector('select');
+            // Usar querySelectorAll para encontrar TODOS los elementos con el mismo nombre
+            const elements = document.querySelectorAll(`.form-element[data-element-name="${elementName}"]`);
+            
+            if (elements.length > 0) {
+                let value = this.responseData[elementName];
                 
-                if (input) {
-                    // Obtener valor de response.json o usar "N/A"
-                    let value = this.responseData[elementName];
+                // Si el valor es null, undefined o string vacío, usar "N/A"
+                if (value === null || value === undefined || value === '') {
+                    value = 'N/A';
+                }
+                
+                // Procesar CADA elemento encontrado
+                elements.forEach((element, index) => {
+                    // Intentar múltiples selectores para encontrar el input
+                    let input = element.querySelector('.element-input');
+                    if (!input) input = element.querySelector('input');
+                    if (!input) input = element.querySelector('textarea');
+                    if (!input) input = element.querySelector('select');
                     
-                    // Si el valor es null, undefined o string vacío, usar "N/A"
-                    if (value === null || value === undefined || value === '') {
-                        value = 'N/A';
-                    }
-                    
-                    // Formatear fechas para inputs de tipo date
-                    if (input.type === 'date' && value !== 'N/A') {
-                        const originalValue = value;
-                        value = this.formatDateForInput(value, 'date');
-                        if (elementName === 'Fecha de Nacimiento') {
-                            console.log(`🔄 Fecha convertida: ${originalValue} -> ${value}`);
+                    if (input) {
+                        let finalValue = value;
+                        
+                        // Formatear fechas para inputs de tipo date
+                        if (input.type === 'date' && finalValue !== 'N/A') {
+                            const originalValue = finalValue;
+                            finalValue = this.formatDateForInput(finalValue, 'date');
+                            if (elementName === 'Fecha de Nacimiento' && index === 0) {
+                                console.log(`🔄 Fecha convertida: ${originalValue} -> ${finalValue}`);
+                            }
+                        }
+                        
+                        input.value = finalValue;
+                        loadedCount++;
+                        
+                        // Verificación especial para elementos problemáticos (solo mostrar para el primer elemento)
+                        if (elementName === 'question7' && index === 0) {
+                            console.log(`✅ question7 mapeado correctamente: ${finalValue} -> ${elements.length} elemento(s) encontrado(s)`);
+                        }
+                        if (elementName === 'Fecha de Nacimiento' && index === 0) {
+                            console.log(`✅ Fecha de Nacimiento mapeado: ${finalValue} -> ${elements.length} elemento(s) encontrado(s)`);
+                            console.log(`Tipo de input: ${input.type}, Tag: ${input.tagName}`);
                         }
                     }
-                    
-                    input.value = value;
-                    loadedCount++;
-                    
-                    // Verificación especial para elementos problemáticos
-                    if (elementName === 'question7') {
-                        console.log(`✅ question7 mapeado correctamente: ${value} -> input.value: ${input.value}`);
-                    }
-                    if (elementName === 'Fecha de Nacimiento') {
-                        console.log(`✅ Fecha de Nacimiento mapeado: ${value} -> input.value: ${input.value}`);
-                        console.log(`Tipo de input: ${input.type}, Tag: ${input.tagName}`);
-                    }
-                }
+                });
             }
         });
         
