@@ -60,12 +60,12 @@ class FormBuilder {
             const response = await fetch('response.json');
             if (response.ok) {
                 this.responseData = await response.json();
-                this.updateStatus('Datos de respuesta cargados');
-                console.log('Datos de respuesta cargados:', this.responseData);
+                this.updateStatus('Datos de respuesta cargados correctamente', 'success');
+            } else {
+                this.updateStatus('No se pudo cargar response.json', 'warning');
             }
         } catch (error) {
-            console.log('No se encontró archivo de respuestas');
-            this.responseData = null;
+            this.updateStatus('Error al cargar response.json', 'error');
         }
     }
 
@@ -837,7 +837,6 @@ class FormBuilder {
     // Método para verificar si el canvas está listo
     isCanvasReady() {
         const elementsInCanvas = document.querySelectorAll('.form-element[data-element-name]').length;
-        console.log(`Elementos del formulario en canvas: ${elementsInCanvas}`);
         return elementsInCanvas > 0;
     }
 
@@ -846,139 +845,81 @@ class FormBuilder {
         if (this.isCanvasReady()) {
             this.loadValuesIntoForm();
         } else {
-            console.log('Canvas no está listo, esperando...');
             setTimeout(() => {
                 this.loadValuesIntoFormWhenReady();
             }, 500);
         }
     }
 
-    // Método de debugging para inspeccionar elementos específicos
-    debugElement(elementName) {
-        const element = document.querySelector(`.form-element[data-element-name="${elementName}"]`);
-        if (element) {
-            console.log(`=== DEBUG ELEMENTO: ${elementName} ===`);
-            console.log('Tipo:', element.getAttribute('data-element-type'));
-            console.log('HTML completo:', element.outerHTML);
-            console.log('Inputs encontrados:', element.querySelectorAll('input, textarea, select').length);
-            console.log('Elementos con clase .element-input:', element.querySelectorAll('.element-input').length);
-            
-            // Mostrar detalles de cada input encontrado
-            const inputs = element.querySelectorAll('input, textarea, select');
-            inputs.forEach((input, index) => {
-                console.log(`Input ${index + 1}:`, {
-                    tag: input.tagName,
-                    type: input.type,
-                    class: input.className,
-                    value: input.value
-                });
-            });
-            
-            console.log('=== FIN DEBUG ===');
-        } else {
-            console.log(`=== DEBUG: Elemento ${elementName} no encontrado ===`);
-        }
-    }
+
 
     loadValuesIntoForm() {
         if (!this.responseData) {
-            console.log('No hay datos de respuesta para cargar');
             return;
         }
 
-        console.log('Cargando valores en el formulario...');
-        console.log('Datos de respuesta:', this.responseData);
+        // Obtener todos los elementos definidos en el layout
+        const layoutElements = this.getLayoutElements();
         
-        // Esperar un poco más para asegurar que el DOM esté completamente renderizado
-        setTimeout(() => {
-            let valuesLoaded = 0;
-            let elementsFound = 0;
-            let elementsInDOM = document.querySelectorAll('.form-element[data-element-name]').length;
-            
-            console.log(`Elementos en el DOM: ${elementsInDOM}`);
-            
-            Object.keys(this.responseData).forEach(fieldName => {
-                const value = this.responseData[fieldName];
-                console.log(`Buscando elemento: ${fieldName}`);
+        // Buscar elementos del formulario
+        const elements = document.querySelectorAll('.form-element[data-element-name]');
+        let loadedCount = 0;
+        
+        // Procesar cada elemento del layout
+        layoutElements.forEach(elementName => {
+            const element = document.querySelector(`.form-element[data-element-name="${elementName}"]`);
+            if (element) {
+                // Intentar múltiples selectores para encontrar el input
+                let input = element.querySelector('.element-input');
+                if (!input) input = element.querySelector('input');
+                if (!input) input = element.querySelector('textarea');
+                if (!input) input = element.querySelector('select');
                 
-                // Buscar específicamente elementos del formulario, no iconos de visibilidad
-                const formElement = document.querySelector(`.form-element[data-element-name="${fieldName}"]`);
-                
-                if (formElement) {
-                    elementsFound++;
-                    console.log(`Elemento encontrado: ${fieldName}, tipo: ${formElement.dataset.elementType}`);
+                if (input) {
+                    // Obtener valor de response.json o usar "N/A"
+                    let value = this.responseData[elementName];
                     
-                    const elementType = formElement.dataset.elementType;
-                    
-                    // Buscar el input según el tipo de elemento
-                    if (elementType === 'panel') {
-                        // Los paneles no tienen inputs, solo contenido
-                        console.log(`Elemento ${fieldName} es un panel, saltando...`);
-                        return;
+                    // Si el valor es null, undefined o string vacío, usar "N/A"
+                    if (value === null || value === undefined || value === '') {
+                        value = 'N/A';
                     }
                     
-                    // Debugging detallado para el primer elemento que no funciona
-                    if (valuesLoaded === 0) {
-                        this.debugElement(fieldName);
-                    }
-                    
-                    // Intentar múltiples selectores para encontrar el input
-                    let input = formElement.querySelector('.element-input') ||
-                               formElement.querySelector('input') ||
-                               formElement.querySelector('textarea') ||
-                               formElement.querySelector('select');
-                    
-                    if (input) {
-                        // Asignar el valor según el tipo de input
-                        if (input.tagName.toLowerCase() === 'textarea') {
-                            input.value = value;
-                        } else if (input.type === 'date') {
-                            // Formatear fecha si es necesario
-                            input.value = value;
-                        } else if (input.type === 'number') {
-                            input.value = value;
-                        } else {
-                            input.value = value;
-                        }
-                        
-                        valuesLoaded++;
-                        console.log(`Valor cargado para ${fieldName}: ${value}`);
-                        
-                        // Agregar una clase visual para indicar que el campo tiene datos
-                        formElement.classList.add('has-data');
-                    } else {
-                        console.log(`No se encontró input para el elemento: ${fieldName} (tipo: ${elementType})`);
-                        // Mostrar la estructura del elemento para debugging
-                        console.log('Estructura del elemento:', formElement.innerHTML);
-                        
-                        // Debugging adicional
-                        console.log('Todos los elementos input/textarea/select en el elemento:');
-                        const allInputs = formElement.querySelectorAll('input, textarea, select');
-                        allInputs.forEach((inp, idx) => {
-                            console.log(`  ${idx}: ${inp.tagName} class="${inp.className}" type="${inp.type}"`);
-                        });
-                    }
-                } else {
-                    console.log(`No se encontró elemento para el campo: ${fieldName}`);
+                    input.value = value;
+                    loadedCount++;
+                }
+            }
+        });
+        
+        if (loadedCount === 0) {
+             this.updateStatus('No se pudieron cargar valores desde response.json', 'error');
+         } else {
+             this.updateStatus(`Se cargaron ${loadedCount} valores desde response.json`, 'success');
+         }
+    }
+
+    // Método para obtener todos los elementos definidos en el layout
+    getLayoutElements() {
+        const elements = new Set();
+        
+        // Agregar elementos del layout personalizado
+        if (this.customLayout && this.customLayout.rows) {
+            this.customLayout.rows.forEach(row => {
+                if (row.elements) {
+                    row.elements.forEach(elementName => {
+                        elements.add(elementName);
+                    });
                 }
             });
-            
-            console.log(`Elementos encontrados: ${elementsFound}, Valores cargados: ${valuesLoaded}`);
-            
-            if (valuesLoaded > 0) {
-                this.updateStatus(`${valuesLoaded} valores cargados desde response.json`, 'success');
-            } else if (elementsInDOM === 0) {
-                this.updateStatus('Esperando que se rendericen los elementos...', 'info');
-                // Intentar de nuevo después de un poco más de tiempo
-                setTimeout(() => this.loadValuesIntoForm(), 1000);
-            } else {
-                this.updateStatus('No se pudieron cargar valores desde response.json', 'warning');
-                console.log('Elementos disponibles en el DOM:');
-                document.querySelectorAll('.form-element[data-element-name]').forEach(el => {
-                    console.log(`- ${el.dataset.elementName} (tipo: ${el.dataset.elementType})`);
-                });
-            }
-        }, 1000); // Aumentar el tiempo de espera
+        }
+        
+        // Agregar elementos del cuestionario base
+        if (this.questionnaire && this.questionnaire.elements) {
+            this.questionnaire.elements.forEach(element => {
+                elements.add(element.name);
+            });
+        }
+        
+        return Array.from(elements);
     }
 
     // Método para recargar valores manualmente
